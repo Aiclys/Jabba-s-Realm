@@ -9,7 +9,7 @@
 - Star-Wars ingame Webshop mit Konten (Anmeldung und Login)
 (- Gegebenenfalls mit Chatoption (Forum))
 - Name: Jabba’s Realm
-- Kategorien: Waffen, Schiffe, Headhunter, Rüstung, Illegale Tiere, Droiden
+- Kategorien: Waffen, ~~Schiffe~~, Headhunter, Rüstung, Illegale Tiere, Droiden
 - Währung: Credits
 - Credit to EUR/USD converter
 - Stil der App: Untergrund mässig, dunkel
