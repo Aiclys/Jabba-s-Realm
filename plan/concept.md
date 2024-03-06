@@ -4,25 +4,25 @@
 
 ### Database
 #### user:
-* [] username
-- [] region
-- [] password
-- [] balance
-- [] history
+- [x] username
+- [x] region
+- [x] password
+- [x] balance
+- [x] history
 
 #### articles:
-- [] name
-- [] category (weapons, ships, headhunters, armor, pets, droids)
-- [] manufacturer
-- [] price
-- [] desc (short description)
+- [x] name
+- [x] category (weapons, ships, headhunters, armor, pets, droids)
+- [x] manufacturer
+- [x] price
+- [x] desc (short description)
 
 ### Features
 #### Illegal market:
 - illegal market to buy:
 - [] droids 
-- [] ships
-- [] weapons
+- [x] ships
+- [x] weapons
 - [] armor
 - [] pets
 - [] you can also hire headhunters/murder for hire
@@ -32,11 +32,11 @@
 - [] graphs with matplotlib
 - [] different courses
 - [] everything predefined to have less complexity
-- [] 1 CRED = 1.867 EUR
-- [] credit-to-eur converter
-- [] eur-to-credit converter
-- [] credit-to-usd converter
-- [] usd-to-credit converter
+- [x] 1 CRED = 1.867 EUR
+- [x] credit-to-eur converter
+- [x] eur-to-credit converter
+- [x] credit-to-usd converter
+- [x] usd-to-credit converter
 
 #### Republic destroyer:
 - [] Space Invaders imitation with Star-Wars theme
