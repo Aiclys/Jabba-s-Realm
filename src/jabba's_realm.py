@@ -29,7 +29,7 @@ login_Button = tk.Button(root_login, text="Login", command=login)
 login_Button.pack()
 
 # Sekundärfenster
-root_secondary = tk.Tk()
+root_secondary = tk.Toplevel()
 root_secondary.title("Jabba's Realm")
 root_secondary.geometry("1320x800")
 root_secondary.minsize(width=250, height=250)
