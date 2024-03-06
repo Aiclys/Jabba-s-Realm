@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sqlite3
 
-# Establish connection to the database
+
 con = sqlite3.connect("jabbas-data.db")
 cur = con.cursor()
 
@@ -75,6 +75,28 @@ def poorest_user(region):
     res = result.fetchall()
     return res
 
+# Lists users in ascending order
+def sort_user_asc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM users ORDER BY username ASC")
+    else:
+        result = cur.execute(f"SELECT * FROM users WHERE region='{region}' ORDER BY username ASC")
+
+    res = result.fetchall()
+    return res
+
+# Lists users in descending order
+def sort_users_desc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM users ORDER BY username DESC")
+    else:
+        result = cur.execute(f"SELECT * FROM users WHERE region='{region}' ORDER BY username DESC")
+
+    res = result.fetchall()
+    return res
+
+
+
 
 
 # ARTICLES
@@ -145,6 +167,47 @@ def cheapest_from_manufacturer(manufacturer):
 
     res = result.fetchall()
     return res[0][0]
+
+# Lists articles by name in ascending order
+def sort_articles_by_name_asc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM articles ORDER BY name ASC")
+    else:
+        result = cur.execute(f"SELECT * FROM articles WHERE region='{region}' ORDER BY name ASC")
+
+    res = result.fetchall()
+    return res
+
+# Lists articles by name in descending order
+def sort_articles_by_name_desc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM articles ORDER BY name DESC")
+    else:
+        result = cur.execute(f"SELECT * FROM articles WHERE region='{region}' ORDER BY name DESC")
+
+    res = result.fetchall()
+    return res
+
+# Lists articles by price in ascending order
+def sort_articles_by_price_asc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM articles ORDER BY price ASC")
+    else:
+        result = cur.execute(f"SELECT * FROM articles WHERE region='{region}' ORDER BY price ASC")
+
+    res = result.fetchall()
+    return res
+
+# Lists articles by price in descending order
+def sort_articles_by_price_desc(region):
+    if region == "all":
+        result = cur.execute(f"SELECT * FROM articles ORDER BY price DESC")
+    else:
+        result = cur.execute(f"SELECT * FROM articles WHERE region='{region}' ORDER BY price DESC")
+
+    res = result.fetchall()
+    return res
+
 
 
 con.close()
