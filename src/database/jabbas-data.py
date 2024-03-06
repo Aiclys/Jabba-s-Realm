@@ -25,7 +25,7 @@ def add_article():
         article_desc = input("Article description: ")
         cur.execute(f"INSERT INTO articles VALUES({article_name}, {article_category}, {article_region}, {article_price}, {article_desc})")
 
-# Add users intol admin inputs "exit"
+# Add users until admin inputs "exit"
 def add_user():
     username = None
     user_region = None
