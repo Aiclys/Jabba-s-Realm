@@ -12,7 +12,7 @@
 
 #### articles:
 - [x] name
-- [x] category (weapons, ships, headhunters, armor, pets, droids)
+- [x] category (weapons, ships, vehicles, headhunters, armor, pets, droids)
 - [x] manufacturer
 - [x] price
 - [x] desc (short description)
