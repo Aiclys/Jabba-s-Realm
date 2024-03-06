@@ -1,13 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 
-def switch_to_secondary():
-    root_secondary.deiconify()  # Sekundärfenster anzeigen
-    root_login.withdraw()       # Primärfenster ausblenden
 
-def login():
-    # Fügen Sie hier Ihre Authentifizierungslogik hinzu
-    switch_to_secondary()
 
 root_login = tk.Tk()
 root_login.title("Login")
@@ -47,6 +41,13 @@ hutts_p.place(relx=0.1, rely=0.4, relwidth=0.22, relheight=0.1)
 jabbas_s = tk.Button(root_secondary, text="Jabba's Stocks")
 jabbas_s.place(relx=0.1, rely=0.55, relwidth=0.22, relheight=0.1)
 
+def switch_to_secondary():
+    root_secondary.deiconify()  # Sekundärfenster anzeigen
+    root_login.withdraw()       # Primärfenster ausblenden
+
+def login():
+    # Fügen Sie hier Ihre Authentifizierungslogik hinzu
+    switch_to_secondary()
 
 root_secondary.withdraw()  # Sekundärfenster zuerst ausblenden
 
