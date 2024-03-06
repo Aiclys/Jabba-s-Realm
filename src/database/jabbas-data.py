@@ -7,7 +7,7 @@ cur = con.cursor()
 
 # Only run once to create tables
 def create_table():
-    cur.execute("CREATE TABLE articles(name, category, region, price, desc)")
+    cur.execute("CREATE TABLE articles(name, category, manufacturer, price, desc)")
     cur.execute("CREATE TABLE users(username, region, password, balance, history)")
 
 # Add articles until admin inputs "exit"
@@ -63,10 +63,10 @@ def average_balance_in_region(region):
         res = result.fetchall()
         return res
 
-def get_articles_in_region(region):
-    result = cur.execute(f"SELECT name FROM articles WHERE region='{region}'")
-    res = result.fetchall()
-    return res[0][0]
+#def get_articles_in_region(region):
+#    result = cur.execute(f"SELECT name FROM articles WHERE region='{region}'")
+#    res = result.fetchall()
+#    return res[0][0]
 
 def get_articles_in_category(category):
     result = cur.execute(f"SELECT name FROM articles WHERE category='{category}'")
