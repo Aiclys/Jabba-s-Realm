@@ -25,7 +25,7 @@ def add_article():
         article_desc = input("Article description: ")
         cur.execute(f"INSERT INTO articles VALUES({article_name}, {article_category}, {article_region}, {article_price}, {article_desc})")
 
-# Add users until admin inputs "exit"
+# Add users intol admin inputs "exit"
 def add_user():
     username = None
     user_region = None
@@ -73,7 +73,23 @@ def get_articles_in_category(category):
     res = result.fetchall()
     return res
 
+def most_expensive_in_category(category):
+    result = cur.execute(f"SELECT name FROM articles WHERE category='{category}' AND price=MAX(price)")
+    res = result.fetchall()
+    return res[0][0]
+
+def get_articles_from_manufacturer(manufacturer):
+    result = cur.execute(f"SELECT name FROM articles WHERE manufacturer='{manufacturer}'")
+    res = result.fetchall()
+    return res[0][0]
+
+def most_expensive_article_from_manufacturer(manufacturer):
+    result = cur.execute(f"SELECT name FROM articles WHERE price=MAX(price) AND manufacturer='{manufacturer}'")
+    res = result.fetchall()
+    return res[0][0]
+
 
 
 
 con.close()
+
