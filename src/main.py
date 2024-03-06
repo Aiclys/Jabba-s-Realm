@@ -47,13 +47,6 @@ hutts_p.place(relx=0.1, rely=0.4, relwidth=0.22, relheight=0.1)
 jabbas_s = tk.Button(root_secondary, text="Jabba's Stocks")
 jabbas_s.place(relx=0.1, rely=0.55, relwidth=0.22, relheight=0.1)
 
-#image_path = r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\credits.png"
-#image = Image.open(image_path)
-#image = image.resize((int(image.width * 0.1), int(image.height * 0.1)))  # Resize image if necessary
-#image = ImageTk.PhotoImage(image)
-#label2 = tk.Label(root_secondary, image=image)
-#label2.image = image  # Save reference to avoid garbage collection
-#label2.place(relx=0.93, rely=0.01)
 
 root_secondary.withdraw()  # Sekundärfenster zuerst ausblenden
 
