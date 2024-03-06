@@ -5,7 +5,7 @@ import sqlite3
 con = sqlite3.connect("jabbas-data.db")
 cur = con.cursor()
 
-# DO NOT use this function anymore, database and tables already created
+# Only run once to create tables
 def create_table():
     cur.execute("CREATE TABLE articles(name, category, region, price, desc)")
     cur.execute("CREATE TABLE users(username, region, password, balance, history)")
@@ -40,15 +40,39 @@ def add_user():
         user_history = input("User history: ")
         cur.execute(f"INSERT INTO users VALUES({username}, {user_region}, {user_password}, {user_balance}, {user_history})")
 
-def get_users_for_region(region):
+def get_users_in_region(region):
     result = cur.execute(f"SELECT username FROM users WHERE region='{region}'")
     res = result.fetchall()
     return res[0][0]
 
-def get_articles_for_region(region):
+def get_users_history(username):
+    result = cur.execute(f"SELECT history FROM users WHERE username='{username}'")
+    res = result.fetchall()
+    return res
+
+def get_users_balance(username):
+    result = cur.execute(f"SELECT balance FROM users WHERE username='{username}'")
+
+def average_balance_in_region(region):
+    if region == "all":
+        result = cur.execute(f"SELECT AVG(balance) FROM users")
+        res = result.fetchall()
+        return res
+    else:
+        result = cur.execute(f"SELECT AVG(balance) FROM users WHERE region='{region}'")
+        res = result.fetchall()
+        return res
+
+def get_articles_in_region(region):
     result = cur.execute(f"SELECT name FROM articles WHERE region='{region}'")
     res = result.fetchall()
     return res[0][0]
+
+def get_articles_in_category(category):
+    result = cur.execute(f"SELECT name FROM articles WHERE category='{category}'")
+    res = result.fetchall()
+    return res
+
 
 
 
