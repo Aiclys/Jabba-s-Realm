@@ -23,6 +23,7 @@ def add_article():
         article_price = input("Price of article in CRED: ")
         article_desc = input("Article description: ")
         cur.execute(f"INSERT INTO articles VALUES({article_name}, {article_category}, {article_manufacturer}, {article_price}, {article_desc})")
+        con.commit()
 
 # Lists all articles in a category
 def get_articles_in_category(category):
@@ -117,6 +118,5 @@ def sort_articles_by_price_desc(region):
     return res
 
 
-create_table()
 
 con.close()
