@@ -14,10 +14,20 @@ def create_weapons_table():
                 price FLOAT NOT NULL,
                 category TEXT NOT NULL,
                 manufacturer TEXT,
-                range TEXT
+                range TEXT,
+                crew INT
     )"""
     cur.execute(weapons_table)
 
+
+def add_weapons():
+    weapon_id = input("Weapons id: ")
+    name = input("Weapons name: ")
+    price = input("Weapons price: ")
+    category = input("Weapons category: ")
+    manufacturer = input("Weapons manufacturer: ")
+    weapon_range = input("Weapons range: ")
+    cur.execute(f"INSERT INTO weapons VALUES({weapon_id}, '{name}', {price}, '{category}', '{manufacturer}', {weapon_range})")
 
 def get_weapon_by_id(weapon_id):
     if weapon_id == "all":
