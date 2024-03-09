@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sqlite3
+import random
 
 con = sqlite3.connect("jabbas-data.db")
 cur = con.cursor()
