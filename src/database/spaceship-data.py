@@ -70,6 +70,7 @@ def add_spaceships():
         {torpedo},
         '{consumables}'
         )""")
+    con.commit()
 
 # Outputs a random spaceship
 def get_random_spaceship(category):
@@ -103,7 +104,7 @@ def get_spaceship_by_id(spaceship_id):
     res = result.fetchall()
     return res
 
-# Searches spaceships by id
+# Searches spaceships by name
 def get_spaceships_by_name(name):
     if name == "all":
         result = cur.execute("SELECT * FROM spaceships")
@@ -407,7 +408,7 @@ def highest_spaceship(category):
     res = result.fetchall()
     return res
 
-# Outputs the average height
+# Outputs the average spaceship height
 def average_spaceship_height(category):
     if category == "all":
         result = cur.execute("SELECT AVG(height) FROM spaceships")
@@ -467,7 +468,7 @@ def most_crewmembers_in_spaceship(category):
     res = result.fetchall()
     return res
 
-# Outputs the average amount of crew members in a category
+# Outputs the average amount of crew members in a spaceship in a category
 def average_crewmembers_in_spaceship(category):
     if category == "all":
         result = cur.execute("SELECT AVG(crew) FROM spaceships")
@@ -730,9 +731,9 @@ def fastest_spaceship(category):
 # Outputs the average spaceship speed in a category
 def average_spaceship_speed(category):
     if category == "all":
-        result = cur.execute("SELECT AVG(speed) FROM spaceships")
+        result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships")
     else:
-        result = cur.execute(f"SELECT AVG(speed) FROM spaceships WHERE category='{category}'")
+        result = cur.execute(f"SELECT AVG(max_atmos_speed) FROM spaceships WHERE category='{category}'")
 
     res = result.fetchall()
     return res
@@ -760,9 +761,9 @@ def fastest_spaceship_from_manufacturer(manufacturer):
 # Outputs the average spaceship speed from a manufacturer
 def average_spaceship_speed_from_manufacturer(manufacturer):
     if manufacturer == "all":
-        result = cur.execute("SELECT AVG(speed) FROM spaceships")
+        result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships")
     else:
-        result = cur.execute(f"SELECT AVG(speed) FROM spaceships WHERE manufacturer='{manufacturer}'")
+        result = cur.execute(f"SELECT AVG(max_atmos_speed) FROM spaceships WHERE manufacturer='{manufacturer}'")
 
     res = result.fetchall()
     return res
