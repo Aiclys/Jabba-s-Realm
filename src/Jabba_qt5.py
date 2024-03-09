@@ -1,10 +1,12 @@
 import sys
 import sqlite3
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QFrame, QMessageBox, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QDialog, QMessageBox
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl, Qt
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -14,9 +16,9 @@ class LoginScreen(QMainWindow):
         self.setGeometry(100, 100, 500, 300)
 
         # Set background image
-        #self.background_label = QLabel()
-        #self.background_label.setScaledContents(True)
-        #self.set_background_image(self.background_label, "pictures/Background_stern.png")
+        self.background_label = QLabel()
+        self.background_label.setScaledContents(True)
+        self.set_background_image(self.background_label, "pictures/Background_stern.png")
         
         # Add a yellow title
         title_label = QLabel("Jabba's Realm")
@@ -41,6 +43,11 @@ class LoginScreen(QMainWindow):
         self.register_button.clicked.connect(self.register)
         self.register_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
 
+        # Create and add forgot password button
+        self.forgot_password_button = QPushButton("Forgot Password?")
+        self.forgot_password_button.clicked.connect(self.forgot_password)
+        self.forgot_password_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
+
         # Layout setup
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -50,6 +57,7 @@ class LoginScreen(QMainWindow):
         layout.addWidget(self.password_input, alignment=Qt.AlignCenter)
         layout.addWidget(self.login_button, alignment=Qt.AlignCenter)
         layout.addWidget(self.register_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
         
         # Horizontal layout for logo
         h_layout = QHBoxLayout()
@@ -59,6 +67,10 @@ class LoginScreen(QMainWindow):
 
         # Play background music for login screen
         self.play_background_music("Audio/Tatooine.mp3")
+
+    def set_background_image(self, label, image_path):
+        pixmap = QPixmap(image_path)
+        label.setPixmap(pixmap)
 
     def login(self):
         username = self.username_input.text()
@@ -84,13 +96,22 @@ class LoginScreen(QMainWindow):
         username = self.username_input.text()
         password = self.password_input.text()
         
-        #Open registration dialog
+        # Open registration dialog
         dialog = RegisterDialog(self)
         if dialog.exec_():
             email = dialog.email_input.text()
             region = dialog.region_input.text()
             
+            # Save user to the database
+            conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
+            conn.commit()
+            conn.close()
 
+    def forgot_password(self):
+        dialog = ForgotPasswordDialog(self)
+        dialog.exec_()
 
     def play_background_music(self, music_file):
         self.mediaPlayer = QMediaPlayer()
@@ -100,53 +121,63 @@ class LoginScreen(QMainWindow):
         self.mediaPlayer.setVolume(30)
         self.mediaPlayer.play()
 
-class RegisterDialog(QDialog):
+class ForgotPasswordDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Register")
+        self.setWindowTitle("Forgot Password")
         self.setGeometry(200, 200, 300, 200)
 
         layout = QVBoxLayout()
 
-        self.username_input = QLineEdit()
-        self.username_input.setPlaceholderText("Username")
-
-        self.password_input = QLineEdit()
-        self.password_input.setPlaceholderText("Password")
-        self.password_input.setEchoMode(QLineEdit.Password)
-
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
 
-        self.region_input = QLineEdit()
-        self.region_input.setPlaceholderText("Region")
-
-        register_button = QPushButton("Register")
-        register_button.clicked.connect(self.register)
-
-        layout.addWidget(self.username_input)
-        layout.addWidget(self.password_input)
+        retrieve_password_button = QPushButton("Retrieve Password")
+        retrieve_password_button.clicked.connect(self.retrieve_password_from_database)
+        
         layout.addWidget(self.email_input)
-        layout.addWidget(self.region_input)
-        layout.addWidget(register_button)
+        layout.addWidget(retrieve_password_button)
 
         self.setLayout(layout)
-        
-    def register(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
-        email = self.email_input.text()
-        region = self.region_input.text()
 
-        # Save user to the database
+    def retrieve_password_from_database(self):
+        email = self.email_input.text()
+        password = self.parent().retrieve_password_from_database(email)
+        if password:
+            self.send_password_email(email, password)  # Sendet das Passwort per E-Mail
+            QMessageBox.information(self, "Password Retrieval", "An email has been sent to your email address with the password.")  # Anzeige der Bestätigungsmeldung
+            self.accept()
+        else:
+            QMessageBox.warning(self, "Password Retrieval Failed", "No user with this email exists.")
+
+
+    def send_password_email(self, email, password):
+        sender_email = "jabbasrealm@outlook.com"  # Ihre E-Mail-Adresse
+        sender_password = "realmjabbas123"  # Ihr E-Mail-Passwort
+        recipient_email = email
+        subject = "Password Recovery"
+        body = f"Ihr Passwort lautet: {password}"
+
+        # E-Mail-Nachricht zusammenstellen
+        message = MIMEMultipart()
+        message["From"] = sender_email
+        message["To"] = recipient_email
+        message["Subject"] = subject
+        message.attach(MIMEText(body, "plain"))
+
+        # Verbindung zum SMTP-Server herstellen und E-Mail senden
+        with smtplib.SMTP_SSL("smtp-mail.outlook.com", 587) as server:
+            server.login(sender_email, sender_password)  # Anmeldung am Server
+            server.send_message(message)  # E-Mail senden
+
+    def retrieve_password_from_database(self, email):
         conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
-        conn.commit()
+        cursor.execute("SELECT password FROM users WHERE email=?", (email,))
+        password = cursor.fetchone()
         conn.close()
-
-        self.accept()
+        return password[0] if password else None
 
 class MainScreen(QMainWindow):
     def __init__(self):
