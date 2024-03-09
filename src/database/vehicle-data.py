@@ -403,7 +403,7 @@ def lowest_vehicle(category):
     return res
 
 # Outputs the highest vehicles from a manufacturer
-def highest_vehicles_from_manufacturer(manufacturer):
+def highest_vehicle_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM vehicles WHERE height=MAX(height)")
     else:
