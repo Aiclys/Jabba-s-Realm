@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sqlite3
+import random
 
 con = sqlite3.connect("jabbas-data.db")
 cur = con.cursor()
@@ -277,6 +278,114 @@ def shortest_spaceship_from_manufacturer(manufacturer):
         result = cur.execute("SELECT * FROM spaceships WHERE length=MIN(length)")
     else:
         result = cur.execute(f"SELECT * FROM spaceships WHERE length=MIN(length) AND manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def widest_spaceship(category):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE width=MAX(width)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE width=MAX(width) AND category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def average_spaceship_width(category):
+    if category == "all":
+        result = cur.execute("SELECT AVG(width) FROM spaceships")
+    else:
+        result = cur.execute(f"SELECT AVG(width) FROM spaceships WHERE category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def least_wide_spaceship(category):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE width=MIN(width)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE width=MIN(width) AND category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def widest_spaceship_from_manufacturer(manufacturer):
+    if manufacturer == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE width=MAX(width)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE width=MAX(width) AND manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def average_spaceship_width_from_manufacturer(manufacturer):
+    if manufacturer == "all":
+        result = cur.execute("SELECT AVG(width) FROM spaceships")
+    else:
+        result = cur.execute(f"SELECT AVG(width) FROM spaceships WHERE manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def least_wide_spaceship_from_manufacturer(manufacturer):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE width=MIN(width)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE width=MIN(width) AND manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def highest_spaceship(category):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE height=MAX(height)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE height=MAX(height) AND category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def average_spaceship_height(category):
+    if category == "all":
+        result = cur.execute("SELECT AVG(height) FROM spaceships")
+    else:
+        result = cur.execute(f"SELECT AVG(height) FROM spaceships WHERE category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def lowest_spaceship(category):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE height=MIN(height)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE height=MIN(height) AND category='{category}'")
+
+    res = result.fetchall()
+    return res
+
+def highest_spaceship_from_manufacturer(manufacturer):
+    if manufacturer == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE height=MAX(height)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE height=MAX(height) AND manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def average_spaceship_height_from_manufacturer(manufacturer):
+    if manufacturer == "all":
+        result = cur.execute("SELECT AVG(height) FROM spaceships")
+    else:
+        result = cur.execute(f"SELECT AVG(height) FROM spaceships WHERE manufacturer='{manufacturer}'")
+
+    res = result.fetchall()
+    return res
+
+def lowest_spaceship_from_manufacturer(manufacturer):
+    if category == "all":
+        result = cur.execute("SELECT * FROM spaceships WHERE height=MIN(height)")
+    else:
+        result = cur.execute(f"SELECT * FROM spaceships WHERE height=MIN(height) AND manufacturer='{manufacturer}'")
 
     res = result.fetchall()
     return res
