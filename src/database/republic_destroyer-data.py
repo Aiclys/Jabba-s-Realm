@@ -29,6 +29,10 @@ def best_user():
     res = result.fetchall()
     return res
 
-create_rep_dest_table()
+def worst_user():
+    result = cur.execute("SELECT username FROM rep_dest WHERE highscore=MIN(highscore)")
+    res = result.fethall()
+    return res
 
+con.commit()
 con.close()
