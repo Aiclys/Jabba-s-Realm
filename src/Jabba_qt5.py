@@ -7,6 +7,8 @@ from PyQt5.QtCore import QUrl, Qt
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -120,6 +122,57 @@ class LoginScreen(QMainWindow):
         self.mediaPlayer.setMedia(content)
         self.mediaPlayer.setVolume(30)
         self.mediaPlayer.play()
+
+class RegisterDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Register")
+        self.setGeometry(200, 200, 300, 200)
+
+        layout = QVBoxLayout()
+
+        self.username_input = QLineEdit()
+        self.username_input.setPlaceholderText("Username")
+
+        self.password_input = QLineEdit()
+        self.password_input.setPlaceholderText("Password")
+        self.password_input.setEchoMode(QLineEdit.Password)
+
+        self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Email")
+
+        self.region_input = QLineEdit()
+        self.region_input.setPlaceholderText("Region")
+
+        register_button = QPushButton("Register")
+        register_button.clicked.connect(self.register)
+        
+        layout.addWidget(self.username_input)
+        layout.addWidget(self.password_input)
+        layout.addWidget(self.email_input)
+        layout.addWidget(self.region_input)
+        layout.addWidget(register_button)
+
+        self.setLayout(layout)
+    
+    def register(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+        email = self.email_input.text()
+        region = self.region_input.text()
+
+        # Save user to the database
+        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
+        conn.commit()
+        conn.close()
+
+        self.accept()
+
+
+
 
 class ForgotPasswordDialog(QDialog):
     def __init__(self, parent=None):
