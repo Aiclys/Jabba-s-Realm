@@ -9,6 +9,24 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 
+
+class SubWindow(QWidget):
+    def __init__(self, name, window_class):
+        super().__init__()
+        self.name = name
+        self.window_class = window_class
+
+
+        self.button = QPushButton(name)
+        self.button.clicked.connect(self.open_window)
+        self.button.setStyleSheet("font-size: 14px; font-weight: bold; background-color: #ffcc00; color: black")
+
+
+    def open_window(self):
+        self.window = self.window_class()
+        self.window.show()
+
+
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -125,7 +143,7 @@ class LoginScreen(QMainWindow):
         url = QUrl.fromLocalFile(music_file)
         content = QMediaContent(url)
         self.mediaPlayer.setMedia(content)
-        self.mediaPlayer.setVolume(30)
+        self.mediaPlayer.setVolume(10)
         self.mediaPlayer.play()
 
 class RegisterDialog(QDialog):
@@ -259,6 +277,7 @@ class MainScreen(QMainWindow):
         # Create and add buttons for news feed
         button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
         self.button_widgets = []
+        self.windows = {}  # Dictionary to store window objects
         for name in button_names:
             button = QPushButton(name)
             button.clicked.connect(lambda state, button_name=name: self.open_sub_window(button_name))
@@ -293,18 +312,16 @@ class MainScreen(QMainWindow):
         label.setPixmap(pixmap)
 
     def open_sub_window(self, name):
-        if name == "Marketplace":
-            marketplace_window = MarketplaceWindow()
-            marketplace_window.show()
-        elif name == "Jabba's Stocks":
-            stocks_window = StocksWindow()
-            stocks_window.show()
-        elif name == "Hutts Playground":
-            playground_window = PlaygroundWindow()
-            playground_window.show()
-        elif name == "Jabba's Hangout":
-            hangout_window = HangoutWindow()
-            hangout_window.show()
+        if name not in self.windows:
+            if name == "Marketplace":
+                self.windows[name] = MarketplaceWindow()  # Store the window object in the dictionary
+            elif name == "Jabba's Stocks":
+                self.windows[name] = StocksWindow()
+            elif name == "Hutts Playground":
+                self.windows[name] = PlaygroundWindow()
+            elif name == "Jabba's Hangout":
+                self.windows[name] = HangoutWindow()
+        self.windows[name].show()  # Show the window
 
     def play_background_music(self, music_file):
         self.mediaPlayer = QMediaPlayer()
@@ -314,18 +331,156 @@ class MainScreen(QMainWindow):
         self.mediaPlayer.setVolume(30)
         self.mediaPlayer.play()
 
+
+class TooltipWindow(QDialog):
+    def __init__(self, tooltip_text):
+        super().__init__()
+        self.setWindowTitle("Tooltip")
+        self.setGeometry(300, 300, 200, 100)
+
+        layout = QVBoxLayout()
+        self.tooltip_label = QLabel(tooltip_text)
+        self.tooltip_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.tooltip_label)
+
+        exit_button = QPushButton("Exit")
+        exit_button.clicked.connect(self.close)
+        layout.addWidget(exit_button)
+
+        self.setLayout(layout)
+
 class MarketplaceWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Set window title and size
+        # Set window title and full-screen mode
         self.setWindowTitle("Marketplace")
-        self.setGeometry(100, 100, 300, 200)
+        self.showFullScreen()
 
-        label = QLabel("Marketplace")
-        label.setStyleSheet("font-size: 16px;")
+        # Dropdown menu for categories
+        self.category_dropdown = QComboBox()
+        self.category_dropdown.addItems(["droid", "vehicle", "weapon","spaceship","republic_destroyer"])  # Add your categories here
+        self.category_dropdown.currentIndexChanged.connect(self.show_images)
+
+        # Create a scroll area for the images
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.inner_widget = QWidget(self.scroll_area)
+        self.scroll_area.setWidget(self.inner_widget)
+        self.scroll_layout = QGridLayout(self.inner_widget)
+        self.scroll_layout.setHorizontalSpacing(0)  # Set horizontal spacing to 0
+
+        # Initial images (placeholder)
+        self.show_images()
+
+        # Create a layout for the window
         layout = QVBoxLayout(self)
-        layout.addWidget(label, alignment=Qt.AlignCenter)
+        layout.addWidget(self.category_dropdown)
+        layout.addWidget(self.scroll_area)
+
+    def show_images(self):
+        selected_category = self.category_dropdown.currentText()
+        if selected_category == "droid":
+            image_paths = [
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\b1.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\droid3.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\droid4.jpeg",
+                # Add more image paths for Category "droid"
+            ]
+            tooltips = [
+                "B1 Battledroid",
+                "Destroyer Droid",
+                "Droid 3",
+                "Droid 4",
+                # Add more tooltips for Category "droid"
+            ]
+        elif selected_category == "vehicle":
+            image_paths = [
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\xWing.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle2.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle3.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle4.jpeg",
+                # Add more image paths for Category "vehicle"
+            ]
+            tooltips = [
+                "x-Wing",
+                "Vehicle 2",
+                "Vehicle 3",
+                "Vehicle 4",
+                # Add more tooltips for Category "vehicle"
+            ]
+        elif selected_category == "weapon":
+            image_paths = [
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon1.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon2.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon3.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon4.jpeg",
+                # Add more image paths for Category "weapon"
+            ]
+            tooltips = [
+                "Weapon 1",
+                "Weapon 2",
+                "Weapon 3",
+                "Weapon 4",
+                # Add more tooltips for Category "weapon"
+            ]
+        elif selected_category == "spaceship":
+            image_paths = [
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship1.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship2.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship3.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship4.jpeg",
+                # Add more image paths for Category "spaceship"
+            ]
+            tooltips = [
+                "Spaceship 1",
+                "Spaceship 2",
+                "Spaceship 3",
+                "Spaceship 4",
+                # Add more tooltips for Category "spaceship"
+            ]
+        elif selected_category == "republic_destroyer":
+            image_paths = [
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer1.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer2.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer3.jpeg",
+                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer4.jpeg",
+                # Add more image paths for Category "republic_destroyer"
+            ]
+            tooltips = [
+                "Destroyer 1",
+                "Destroyer 2",
+                "Destroyer 3",
+                "Destroyer 4",
+                # Add more tooltips for Category "republic_destroyer"
+            ]
+
+        # Clear existing images
+        for i in reversed(range(self.scroll_layout.count())):
+            self.scroll_layout.itemAt(i).widget().deleteLater()
+
+        # Add images to the scroll layout with tooltips
+        row = 0
+        col = 0
+        for path, tooltip_text in zip(image_paths, tooltips):
+            placeholder_image = QLabel()
+            pixmap = QPixmap(path)
+            pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)  # Resize images to fit properly
+            placeholder_image.setPixmap(pixmap)
+            placeholder_image.setAlignment(Qt.AlignCenter)
+            placeholder_image.setToolTip(tooltip_text)  # Set the tooltip text
+            placeholder_image.mousePressEvent = lambda event, tooltip=tooltip_text: self.show_tooltip(tooltip)
+            self.scroll_layout.addWidget(placeholder_image, row, col)
+            col += 1
+            if col == 7:  # Limit to 7 images per row
+                row += 1
+                col = 0
+
+    def show_tooltip(self, tooltip_text):
+        self.tooltip_window = TooltipWindow(tooltip_text)
+        self.tooltip_window.exec_()
+
 
 class StocksWindow(QWidget):
     def __init__(self):
