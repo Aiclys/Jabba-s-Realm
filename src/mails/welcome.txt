@@ -1,0 +1,11 @@
+
+Dear ${PERSON_NAME},
+
+Thank you for visiting Jabba's Realm. Jabba's Realm is the biggest illegal
+marketplace the galaxy has ever seen! Here you will find whatever your 
+heart desires, ranging from spaceships and weapons to vehicles, droids and 
+creatures. By using the code ILOVEJABBA within 1 week of account creation 
+you'll get 6.9% off your first purchase.
+
+Greetings,
+Jabba
