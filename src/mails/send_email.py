@@ -6,10 +6,10 @@ from string import Template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-MY_ADDRESS = 'email@example.com'
-PASSWORD = 'fill_in_password'
+sender_email = 'email@example.com
+sender_password = 'your_password'
 
-def get_contacts(filename):
+def get_emails(filename):
     """
     Return two lists names, emails containing names and email addresses
     read from a file specified by filename.
@@ -23,7 +23,7 @@ def get_contacts(filename):
             emails.append(a_contact.split()[1])
     return names, emails
 
-def read_template(filename):
+def read_message(filename):
     """
     Returns a Template object comprising the contents of the
     file specified by filename.
@@ -35,7 +35,7 @@ def read_template(filename):
 
 def main():
     names, emails = get_contacts('mycontacts.txt') # read contacts
-    message_template = read_template('message.txt')
+    message_template = read_message('message.txt')
 
     # set up the SMTP server
     s = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
