@@ -16,11 +16,9 @@ class SubWindow(QWidget):
         self.name = name
         self.window_class = window_class
 
-
         self.button = QPushButton(name)
         self.button.clicked.connect(self.open_window)
         self.button.setStyleSheet("font-size: 14px; font-weight: bold; background-color: #ffcc00; color: black")
-
 
     def open_window(self):
         self.window = self.window_class()
@@ -30,6 +28,7 @@ class SubWindow(QWidget):
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.current_user = None  # Hinzufügen einer Instanzvariable für den aktuellen Benutzer
 
         # Set window title and size
         self.setWindowTitle("Login Screen")
@@ -74,24 +73,15 @@ class LoginScreen(QMainWindow):
         self.forgot_password_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
 
         # Layout setup
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
         layout.addWidget(title_label, alignment=Qt.AlignCenter)
         layout.addWidget(self.username_input, alignment=Qt.AlignCenter)
         layout.addWidget(self.password_input, alignment=Qt.AlignCenter)
         layout.addWidget(self.login_button, alignment=Qt.AlignCenter)
         layout.addWidget(self.register_button, alignment=Qt.AlignCenter)
         layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
-        
-        # Horizontal layout for logo
-        h_layout = QHBoxLayout()
-        h_layout.addStretch(1)
-        #h_layout.addWidget(self.logo_label)
-        layout.addLayout(h_layout)
 
         # Play background music for login screen
-        self.play_background_music(r"H:\Inf10\App_Programming\music\Intro.mp3")
+        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\Intro.mp3")
 
     def login(self):
         username = self.username_input.text()
@@ -103,7 +93,7 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
@@ -111,8 +101,9 @@ class LoginScreen(QMainWindow):
     
         # If user exists, go to main screen, otherwise show error message
         if user:
+            self.current_user = username  # Set the current user
             self.mediaPlayer.stop()
-            self.new_screen = MainScreen()
+            self.new_screen = MainScreen(self.current_user)  # Pass the current user to MainScreen
             self.new_screen.show()
             self.close()
         else:
@@ -137,8 +128,9 @@ class LoginScreen(QMainWindow):
         url = QUrl.fromLocalFile(music_file)
         content = QMediaContent(url)
         self.mediaPlayer.setMedia(content)
-        self.mediaPlayer.setVolume(10)
+        self.mediaPlayer.setVolume(30)
         self.mediaPlayer.play()
+
 
 class RegisterDialog(QDialog):
     def __init__(self, parent=None):
@@ -181,16 +173,13 @@ class RegisterDialog(QDialog):
         region = self.region_dropdown.currentText()
 
         # Save user to the database
-        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
+        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 1000))
         conn.commit()
         conn.close()
 
         self.accept()
-
-
-
 
 
 class ForgotPasswordDialog(QDialog):
@@ -244,25 +233,26 @@ class ForgotPasswordDialog(QDialog):
             server.send_message(message)  # E-Mail senden
 
     def retrieve_password_from_database(self, email):
-        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("SELECT password FROM users WHERE email=?", (email,))
         password = cursor.fetchone()
         conn.close()
         return password[0] if password else None
 
+
 class MainScreen(QMainWindow):
-    def __init__(self):
+    def __init__(self, current_user):
         super().__init__()
+
+        self.current_user = current_user  # Store the current user
 
         # Set window title and size
         self.setWindowTitle("Main Screen")
         self.setGeometry(100, 100, 500, 500)
 
-        # Set background image
-        self.background_label = QLabel()
-        self.background_label.setScaledContents(True)
-        self.set_background_image(self.background_label, "pictures/Background_stern.png")
+        # Set background color
+        self.setStyleSheet("background-color: black;")
 
         # Add a fancy title
         title_label = QLabel("Jabba's Realm")
@@ -283,6 +273,11 @@ class MainScreen(QMainWindow):
         self.logo_label.setScaledContents(True)
         self.set_background_image(self.logo_label, "pictures/credits.png")
 
+        # Label to display credits
+        self.credits_label = QLabel()
+        self.credits_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #ffcc00")
+        self.update_credits_label()  # Update credits label initially
+
         # Layout setup
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -290,6 +285,7 @@ class MainScreen(QMainWindow):
         layout.addWidget(title_label, alignment=Qt.AlignCenter)
         for button in self.button_widgets:
             layout.addWidget(button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.credits_label, alignment=Qt.AlignRight)  # Add credits label
         layout.addStretch(1)
 
         # Horizontal layout for logo
@@ -299,11 +295,18 @@ class MainScreen(QMainWindow):
         layout.addLayout(h_layout)
 
         # Play background music for main screen
-        self.play_background_music(r"H:\Inf10\App_Programming\music\cantina.mp3")
+        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\cantina.mp3")
 
-    def set_background_image(self, label, image_path):
-        pixmap = QPixmap(image_path)
-        label.setPixmap(pixmap)
+    def update_credits_label(self):
+        # Fetch credits from the database for the current user
+        username = self.current_user
+        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT balance FROM users WHERE username=?", (username,))
+        credits = cursor.fetchone()[0]  # Fetch the first column of the first row (assuming there's only one row)
+        conn.close()
+
+        self.credits_label.setText(f"Credits: {credits}")
 
     def open_sub_window(self, name):
         if name not in self.windows:
@@ -324,6 +327,10 @@ class MainScreen(QMainWindow):
         self.mediaPlayer.setMedia(content)
         self.mediaPlayer.setVolume(30)
         self.mediaPlayer.play()
+
+    def set_background_image(self, widget, image_path):
+        pixmap = QPixmap(image_path)
+        widget.setPixmap(pixmap)
 
 
 class TooltipWindow(QDialog):
@@ -476,6 +483,7 @@ class MarketplaceWindow(QWidget):
         self.tooltip_window.exec_()
 
 
+
 class StocksWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -501,6 +509,8 @@ class PlaygroundWindow(QWidget):
         label.setStyleSheet("font-size: 16px;")
         layout = QVBoxLayout(self)
         layout.addWidget(label, alignment=Qt.AlignCenter)
+
+    # Remaining methods of PlaygroundWindow
 
 class HangoutWindow(QWidget):
     def __init__(self):
