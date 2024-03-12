@@ -91,7 +91,7 @@ class LoginScreen(QMainWindow):
         layout.addLayout(h_layout)
 
         # Play background music for login screen
-        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\Intro.mp3")
+        self.play_background_music(r"H:\Inf10\App_Programming\music\Intro.mp3")
 
     def login(self):
         username = self.username_input.text()
@@ -103,7 +103,7 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
+        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
@@ -127,12 +127,6 @@ class LoginScreen(QMainWindow):
         if dialog.exec_():
             email = dialog.email_input.text()
             region = dialog.region_dropdown.currentText()  # Get the selected region from the dropdown
-            # Save user to the database
-            conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
-            conn.commit()
-            conn.close()
 
     def forgot_password(self):
         dialog = ForgotPasswordDialog(self)
@@ -187,7 +181,7 @@ class RegisterDialog(QDialog):
         region = self.region_dropdown.currentText()
 
         # Save user to the database
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
+        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO users(username, password, email, region) VALUES (?, ?, ?, ?)", (username, password, email, region))
         conn.commit()
@@ -250,7 +244,7 @@ class ForgotPasswordDialog(QDialog):
             server.send_message(message)  # E-Mail senden
 
     def retrieve_password_from_database(self, email):
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data.db")
+        conn = sqlite3.connect(r"H:\Inf10\App_Programming\database\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("SELECT password FROM users WHERE email=?", (email,))
         password = cursor.fetchone()
@@ -305,7 +299,7 @@ class MainScreen(QMainWindow):
         layout.addLayout(h_layout)
 
         # Play background music for main screen
-        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\cantina.mp3")
+        self.play_background_music(r"H:\Inf10\App_Programming\music\cantina.mp3")
 
     def set_background_image(self, label, image_path):
         pixmap = QPixmap(image_path)
