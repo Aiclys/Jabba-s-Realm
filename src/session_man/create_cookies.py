@@ -45,5 +45,3 @@ def create_cookie(username, userid, password, email, region, balance, history):
     # user_info_fmt = json.loads(user_info)
     with open(f"{username}_cookies.json", "w") as outfile:
         json.dump(user_info, outfile)
-
-create_cookie("test", 1234, "password12345", "me@example.com", "tatoine", 345.54, float("nan"))
