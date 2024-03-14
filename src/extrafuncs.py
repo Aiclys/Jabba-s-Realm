@@ -9,5 +9,5 @@ def add_userid():
 def check_email(email_to_check):
     acceptable_domains = ['gmail.com', 'outlook.com', 'outlook.de' 'gmx.de', 'gmx.net', 'nyrs.garden', 'protonmail.com', 'disroot.org', 'riseup.net']
 
-    if email_to_check[@::] in acceptable_domains:
+    if email_to_check[email_to_check.index("@"):] in acceptable_domains:
         return True
