@@ -4,42 +4,54 @@
 
 ## Database
 #### user:
-- [x] username
+- [ ] username
 - [ ] id
-- [x] region
-- [x] password
-- [x] balance
-- [x] history
+- [ ] region
+- [ ] password
+- [ ] balance
+- [ ] history
 
 ### Articles:
 #### Spaceships
-- [] name
-- [] id
-- [] category
-- [] manufacturer
-- [] price
-- [] length
-- [] width
-- [] height
-- [] crew
-- [] role
-- [] max_atmos_speed
-- [] hyperdrive
-- [] shielding
-- [] engine
-- [] turbolasers
-- [] torpedos
-- [] food
+- [x] name
+- [x] id
+- [x] category
+- [x] manufacturer
+- [x] price
+- [x] length
+- [x] width
+- [x] height
+- [x] crew
+- [x] role
+- [x] max_atmos_speed
+- [x] hyperdrive
+- [x] shielding
+- [x] engine
+- [x] turbolasers
+- [x] torpedos
+- [x] food
+
+#### Vehicles
+- [x] name
+- [x] id
+- [x] category
+- [x] manufacturer
+- [x] role
+- [x] crew
+- [x] length
+- [x] width
+- [x] height
+- [x] max_speed   
 
 ### Features
 #### Illegal market:
 - illegal market to buy:
-- [] droids 
+- [x] droids 
 - [x] ships
 - [x] weapons
-- [] armor
-- [] pets
-- [] you can also hire headhunters/murder for hire
+- [x] armor
+- [x] creatures
+- ~~you can also hire headhunters/murder for hire~~
 
 #### Stock market:
 - [] predesigned stock market with 10 stocks
