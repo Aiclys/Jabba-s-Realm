@@ -14,12 +14,19 @@ def create_rep_dest_table():
     )"""
     cur.execute(rep_dest_table)
 
+create_rep_dest_table()
+
 # Adds a player
 def add_player():
     name = input("Player name: ")
     score = int(input("Score: "))
     highscore = int(input("Highscore: "))
-    cur.execute(f"INSERT INTO rep_dest VALUES('{name}', {score}, {highscore})")
+    player_data = [
+        name,
+        score,
+        highscore
+    ]
+    cur.execute("INSERT INTO rep_dest VALUES(?, ?, ?)", player_data)
 
 # Sorts users by score in ascending order
 def sort_users_by_highscore_asc():
