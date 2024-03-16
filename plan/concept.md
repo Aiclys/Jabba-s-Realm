@@ -2,20 +2,34 @@
 
 ## App concept: Jabba’s Realm
 
-### Database
+## Database
 #### user:
 - [x] username
+- [ ] id
 - [x] region
 - [x] password
 - [x] balance
 - [x] history
 
-#### articles:
-- [x] name
-- [x] category (weapons, ships, vehicles, headhunters, armor, pets, droids)
-- [x] manufacturer
-- [x] price
-- [x] desc (short description)
+### Articles:
+#### Spaceships
+- [] name
+- [] id
+- [] category
+- [] manufacturer
+- [] price
+- [] length
+- [] width
+- [] height
+- [] crew
+- [] role
+- [] max_atmos_speed
+- [] hyperdrive
+- [] shielding
+- [] engine
+- [] turbolasers
+- [] torpedos
+- [] food
 
 ### Features
 #### Illegal market:
