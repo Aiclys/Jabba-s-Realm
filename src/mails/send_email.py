@@ -6,7 +6,7 @@ from string import Template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-sender_email = 'email@example.com
+sender_email = 'email@example.com'
 sender_password = 'your_password'
 
 def get_emails(filename):
