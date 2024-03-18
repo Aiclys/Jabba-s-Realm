@@ -53,6 +53,6 @@ def password_safety(password):
 
 def hashpass(password):
     encoded_password = bytes(password, "utf-8")
-    hashed_password = hashlib.sha256(encoded_password)
+    hashed_password = hashlib.sha512(encoded_password)
     password_hash = hashed_password.hexdigest()
     return password_hash
