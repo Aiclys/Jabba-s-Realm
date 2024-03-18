@@ -38,6 +38,26 @@ def get_stock_with_abbrev(abbreviation):
 def get_stocks_over_price(price):
     stock_price = [price]
     result = cur.execute("SELECT * FROM stocks WHERE price>?", stock_price)
+    res = result.fetchall()
+    return res
+
+def get_stocks_under_price(price):
+    stock_price = [price]
+    result = cur.execute("SELECT * FROM stocks WHERE price<?", stock_price)
+    res = result.fetchall()
+    return res
+
+def get_stocks_over_change(change):
+    stock_change = [change]
+    result = cur.execute("SELECT * FROM stocks WHERE change>?", stock_change)
+    res = result.fetchall()
+    return res
+
+def get_stocks_under_change(change):
+    stock_change = [change]
+    result = cur.execute("SELECT * FROM stocks WHERE change<?", stock_change)
+    res = result.fetchall()
+    return res
 
 def cheapest_stock():
     result = cur.execute("SELECT * FROM stocks WHERE price=MIN(price)")
@@ -82,3 +102,4 @@ def sort_stocks_by_price_desc():
 
 con.commit()
 con.close()
+
