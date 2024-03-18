@@ -2,6 +2,7 @@
 import string
 import secrets
 import math
+import hashlib
 
 def genpass(length):
     all_characters = string.ascii_letters + string.digits + string.punctuation
@@ -49,3 +50,9 @@ def password_safety(password):
         return "strong"
     elif password_entropy(password, "bits") >= 125:
         return "very strong"
+
+def hashpass(password):
+    encoded_password = bytes(password, "utf-8")
+    hashed_password = hashlib.sha256(encoded_password)
+    password_hash = hashed_password.hexdigest()
+    return password_hash
