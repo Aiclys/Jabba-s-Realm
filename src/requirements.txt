@@ -1,0 +1,14 @@
+cffi==1.16.0
+contourpy==1.2.0
+cryptography==42.0.5
+cycler==0.12.1
+fonttools==4.49.0
+kiwisolver==1.4.5
+matplotlib==3.8.3
+numpy==1.26.4
+packaging==23.2
+pillow==10.2.0
+pycparser==2.21
+pyparsing==3.1.2
+python-dateutil==2.9.0.post0
+six==1.16.0
