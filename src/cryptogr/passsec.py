@@ -31,8 +31,6 @@ def genpassphrase(length):
     passphrase = passphrase[1:]
     return passphrase
 
-print(genpassphrase(4))
-
 def password_entropy(password, numeric_form):
     alphabet_lower = [letter for letter in string.ascii_letters][:26]
     alphabet_upper = [letter for letter in string.ascii_letters][27:]
@@ -72,9 +70,39 @@ def password_safety(password):
     elif password_entropy(password, "bits") >= 125:
         return "very strong"
 
-def hashpass(password):
+def hashpass(password, hash_func):
     encoded_password = bytes(password, "utf-8")
-    hashed_password = hashlib.sha512(encoded_password)
-    password_hash = hashed_password.hexdigest()
-    return password_hash
 
+    if hash_func == "sha512":
+        hashed_password = hashlib.sha512(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha384":
+        hashed_password = hashlib.sha384(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha256":
+        hashed_password = hashlib.sha256(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha224":
+        hashed_password = hashlib.sha224(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha3_512":
+        hashed_password = hashlib.sha3_512(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha3_384":
+        hashed_password = hashlib.sha3_384(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha3_256":
+        hashed_password = hashlib.sha3_256(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "sha3_224":
+        hashed_password = hashlib.sha3_224(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "shake256":
+        hashed_password = hashlib.shake256(encoded_password)
+        password_hash = hashed_password.hexdigest()
+    elif hash_func == "shake128":
+        hashed_password = hashlib.shake128(encoded_password)
+        password_hash = hashed_password.hexdigest()
+
+
+    return password_hash
