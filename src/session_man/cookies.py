@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import json
+import socket
 
 def readfile(file_to_open):
     file_to_read = open(file_to_open, "rt")
@@ -35,13 +36,24 @@ def createfile(file_name, content):
         new_file = open(file_name, "a")
         new_file.write(content)
 
-def delfold(folder_to_delete):
-    os.rmdir(folder_to_delete)
-
-
 def create_cookie(username, userid, password, email, region, balance, history):
     user_info = {"name": f"{username}", "id": userid, "password": f"{password}", "email": f"{email}", "region": f"{region}", "balance": balance, "history": f"{history}"}
 
     # user_info_fmt = json.loads(user_info)
     with open(f"{username}_cookies.json", "w") as outfile:
-        json.dump(user_info, outfile)
+        json.dump(user_info, outfile, allow_nan=True)
+
+def get_hostname():
+    try:
+        hostname = socket.gethostname()
+        return hostname
+    except:
+        return "Could not get hostname"
+
+def get_ip():
+    try:
+        ip_address = socket.gethostbyname(socket.gethostname())
+        return ip_address
+    except:
+        return "Could not get IP address"
+
