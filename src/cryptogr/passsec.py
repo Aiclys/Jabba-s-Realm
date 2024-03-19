@@ -4,12 +4,12 @@ import secrets
 import math
 import hashlib
 
-def genpass(length):
+def genpass(length=18):
     all_characters = string.ascii_letters + string.digits + string.punctuation
     password = "".join(secrets.choice(all_characters) for i in range(length))
     return password
 
-def genpassphrase(length):
+def gen_passphrase(length=5):
     word_file = open("wordlist.txt", "r")
     word_list = []
     passphrase = ""
@@ -54,21 +54,43 @@ def password_entropy(password, numeric_form):
     if numeric_form == "decimal":
         return entropy_in_decimal
     elif numeric_form == "bits":
-        return entropy_in_bits
+        return int(entropy_in_bits)
     elif numeric_form == "bytes":
         return entropy_in_bytes
 
 def password_safety(password):
-    if password_entropy(password, "bits") < 35 and password_entropy(password, "bits") < 50:
+    if password_entropy(password, "bits") < 35 and password_entropy(password, "bits") < 35:
         return "very weak"
-    elif password_entropy(password, "bits") >= 50 and password_entropy(password, "bits") < 75:
+    elif password_entropy(password, "bits") >= 35 and password_entropy(password, "bits") < 55:
         return "weak"
-    elif password_entropy(password, "bits") >= 75 and password_entropy(password, "bits") < 95:
+    elif password_entropy(password, "bits") >= 55 and password_entropy(password, "bits") < 75:
         return "medium"
-    elif password_entropy(password, "bits") >= 95 and password_entropy(password, "bits") < 125:
+    elif password_entropy(password, "bits") >= 75 and password_entropy(password, "bits") < 95:
         return "strong"
-    elif password_entropy(password, "bits") >= 125:
+    elif password_entropy(password, "bits") >= 115:
         return "very strong"
+
+def gen_pass_with_entropy(min_entropy):
+    check = None
+    password = genpass()
+    while check == None:
+        if password_entropy(password, "bits") >= min_entropy:
+           check = False
+        else:
+            password = genpass()
+
+    return password
+
+def gen_passphrase_with_entropy(min_entropy):
+    check = None
+    passphrase = gen_passphrase()
+    while check == None:
+        if password_entropy(passphrase, "bits") >= min_entropy:
+           check = False
+        else:
+            passphrase = gen_passphrase()
+
+    return passphrase
 
 def hashpass(password, hash_func):
     encoded_password = bytes(password, "utf-8")
@@ -106,3 +128,4 @@ def hashpass(password, hash_func):
 
 
     return password_hash
+
