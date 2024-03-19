@@ -15,8 +15,7 @@ def gen_passphrase(length=5):
     passphrase = ""
 
     for word in word_file:
-        word_with_space = word
-        word_list.append(word_with_space)
+        word_list.append(word)
 
     passphrase_list = [secrets.choice(word_list) for i in range(length)]
     for word in passphrase_list:
