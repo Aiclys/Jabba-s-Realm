@@ -10,7 +10,28 @@ def genpass(length):
     return password
 
 def genpassphrase(length):
-    return
+    word_file = open("wordlist.txt", "r")
+    word_list = []
+    passphrase = ""
+
+    for word in word_file:
+        word_with_space = word
+        word_list.append(word_with_space)
+
+    passphrase_list = [secrets.choice(word_list) for i in range(length)]
+    for word in passphrase_list:
+        e = 0
+        for letter in word:
+            e += 1
+
+        new_line = word[e-1:]
+        word_without_new_line = word[:e-1]
+        passphrase += " " + word_without_new_line
+
+    passphrase = passphrase[1:]
+    return passphrase
+
+print(genpassphrase(4))
 
 def password_entropy(password, numeric_form):
     alphabet_lower = [letter for letter in string.ascii_letters][:26]
@@ -56,3 +77,4 @@ def hashpass(password):
     hashed_password = hashlib.sha512(encoded_password)
     password_hash = hashed_password.hexdigest()
     return password_hash
+
