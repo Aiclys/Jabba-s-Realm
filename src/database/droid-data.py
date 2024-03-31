@@ -18,6 +18,8 @@ def create_droid_table():
     )"""
     cur.execute(droids_table)
 
+create_droid_table()
+
 def add_droids():
     droid_id = int(input("Droid id: "))
     name = input("Droid name: ")
@@ -26,14 +28,24 @@ def add_droids():
     manufacturer = input("Droid manufacturer: ")
     height = float(input("Droid height: "))
     role = input("Droid role: ")
-    cur.execute(f"INSERT INTO droids VALUES({droid_id}, '{name}', {price}, '{manufacturer}', {height}, '{role}')")
+    droid_info = [
+        droid_id,
+        name,
+        price,
+        category,
+        manufacturer,
+        height,
+        role
+    ]
+    cur.execute("INSERT INTO droids VALUES(?, ?, ?, ?, ?, ?)", droid_info)
 
 # Outputs a random droid
 def get_random_droid(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=?", droid_category)
 
     res = result.fetchall()
     rand_res = random.choice(res)
@@ -44,7 +56,8 @@ def get_random_droid_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM droid")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     rand_res = random.choice(res)
@@ -55,7 +68,8 @@ def get_droid_by_id(droid_id):
     if droid_id == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE id={droid_id}")
+        droid_id = [droid_id]
+        result = cur.execute("SELECT * FROM droids WHERE id=?", droid_id)
 
     res = result.fetchall()
     return res
@@ -65,30 +79,23 @@ def get_droids_by_name(name):
     if name == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE name='{name}'")
-
-    res = result.fetchall()
-    return res
-
-# Lists droids over a specific price
-def get_droids_over_price(price):
-    if name == "all":
-        result = cur.execute("SELECT * FROM droids")
-    else:
-        result = cur.execute(f"SELECT * FROM droids WHERE name='{name}'")
+        droid_name = [name]
+        result = cur.execute("SELECT * FROM droids WHERE name=?", droid_name)
 
     res = result.fetchall()
     return res
 
 # Lists droids over a certain price
 def get_droids_over_price(price):
-    result = cur.execute(f"SELECT * FROM droids WHERE price>{price}")
+    droid_price = [price]
+    result = cur.execute("SELECT * FROM droids WHERE price>?", droid_price)
     res = result.fetchall()
     return res
 
 # Lists droids under a certain price
 def get_droids_under_price(price):
-    result = cur.execute(f"SELECT * FROM droids WHERE price<{price}")
+    droid_price = [price]
+    result = cur.execute("SELECT * FROM droids WHERE price<?", droid_price)
     res = result.fetchall()
     return res
 
@@ -97,7 +104,8 @@ def get_droids_in_category(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -107,7 +115,8 @@ def get_droids_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -117,20 +126,23 @@ def get_droids_with_role(role):
     if role == "all":
         result = cur.execute("SELECT * FROM droids")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE role='{role}'")
+        droid_role = [role]
+        result = cur.execute("SELECT * FROM droids WHERE role=?", droid_role)
 
     res = result.fetchall()
     return res
 
 # Lists all droids over a certain height
 def get_droids_over_height(height):
-    result = cur.execute(f"SELECT * FROM droids WHERE height>{height}")
+    droid_height = [height]
+    result = cur.execute("SELECT * FROM droids WHERE height>?", droid_height)
     res = result.fetchall()
     return res
 
 # Lists all droids under a certain height
 def get_droids_under_height(height):
-    result = cur.execute(f"SELECT * FROM droids WHERE height<{height}")
+    droid_height = [height]
+    result = cur.execute("SELECT * FROM droids WHERE height<?", droid_height)
     res = result.fetchall()
     return res
 
@@ -139,7 +151,8 @@ def most_expensive_droid(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids WHERE price=MAX(price)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE price=MAX(price) AND category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE price=MAX(price) AND category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -149,7 +162,8 @@ def average_droid_price(category):
     if category == "all":
         result = cur.execute("SELECT AVG(price) FROM droids")
     else:
-        result = cur.execute(f"SELECT AVG(price) FROM droids WHERE category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT AVG(price) FROM droids WHERE category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -159,7 +173,8 @@ def cheapest_droid(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids WHERE price=MIN(price)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE price=MIN(price) AND category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE price=MIN(price) AND category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -169,7 +184,8 @@ def most_expensive_droid_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM droids WHERE price=MAX(price)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE price=MAX(price) AND manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE price=MAX(price) AND manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -179,7 +195,8 @@ def average_droid_price_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT AVG(price) FROM droids")
     else:
-        result = cur.execute(f"SELECT AVG(price) FROM droids WHERE manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT AVG(price) FROM droids WHERE manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -189,7 +206,8 @@ def cheapest_droid_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM droids WHERE price=MIN(price)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE price=MIN(price) AND manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE price=MIN(price) AND manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -199,7 +217,8 @@ def highest_droid(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids WHERE height=MAX(height)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE height=MAX(height) AND category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE height=MAX(height) AND category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -209,7 +228,8 @@ def average_droid_height(category):
     if category == "all":
         result = cur.execute("SELECT AVG(height) FROM droids")
     else:
-        result = cur.execute(f"SELECT AVG(height) FROM droids WHERE category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT AVG(height) FROM droids WHERE category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -219,7 +239,8 @@ def lowest_droid(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids WHERE height=MIN(height)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE height=MIN(height) AND category='{category}'")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE height=MIN(height) AND category=?", droid_category)
 
     res = result.fetchall()
     return res
@@ -229,7 +250,8 @@ def highest_droid_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM droids WHERE height=MAX(height)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE height=MAX(height) AND manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE height=MAX(height) AND manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -239,7 +261,8 @@ def average_droid_height_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT AVG(height) FROM droids")
     else:
-        result = cur.execute(f"SELECT AVG(height) FROM droids WHERE manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT AVG(height) FROM droids WHERE manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -249,7 +272,8 @@ def lowest_droid_from_manufacturer(manufacturer):
     if category == "all":
         result = cur.execute("SELECT * FROM droids WHERE height=MIN(height)")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE height=MIN(height) AND manufacturer='{manufacturer}'")
+        droid_manufacturer = [manufacturer]
+        result = cur.execute("SELECT * FROM droids WHERE height=MIN(height) AND manufacturer=?", droid_manufacturer)
 
     res = result.fetchall()
     return res
@@ -262,7 +286,8 @@ def sort_droids_by_id_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY id ASC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY id ASC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY id ASC", droid_category)
 
     res = result.fetchall()
     return res
@@ -272,7 +297,8 @@ def sort_droids_by_id_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY id DESC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY id DESC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY id DESC", droid_category)
 
     res = result.fetchall()
     return res
@@ -282,7 +308,8 @@ def sort_droids_by_name_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY name ASC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY name ASC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY name ASC", droid_category)
 
     res = result.fetchall()
     return res
@@ -292,7 +319,8 @@ def sort_droids_by_name_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY name DESC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY name DESC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY name DESC", droid_category)
 
     res = result.fetchall()
     return res
@@ -302,7 +330,8 @@ def sort_droids_by_price_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY price ASC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY price ASC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY price ASC", droid_category)
 
     res = result.fetchall()
     return res
@@ -312,7 +341,8 @@ def sort_droids_by_price_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY price DESC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY price DESC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY price DESC", droid_category)
 
     res = result.fetchall()
     return res
@@ -322,7 +352,8 @@ def sort_droids_by_height_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY height ASC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY height ASC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY height ASC", droid_category)
 
     res = result.fetchall()
     return res
@@ -332,7 +363,8 @@ def sort_droids_by_height_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM droids ORDER BY height DESC")
     else:
-        result = cur.execute(f"SELECT * FROM droids WHERE category='{category}' ORDER BY height DESC")
+        droid_category = [category]
+        result = cur.execute("SELECT * FROM droids WHERE category=? ORDER BY height DESC", droid_category)
 
     res = result.fetchall()
     return res
