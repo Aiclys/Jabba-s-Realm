@@ -81,7 +81,7 @@ class LoginScreen(QMainWindow):
         layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
 
         # Play background music for login screen
-        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\Intro.mp3")
+        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\Login.mp3")
 
     def login(self):
         username = self.username_input.text()
@@ -265,7 +265,7 @@ class MainScreen(QMainWindow):
         for name in button_names:
             button = QPushButton(name)
             button.clicked.connect(lambda state, button_name=name: self.open_sub_window(button_name))
-            button.setStyleSheet("font-size: 14px; font-weight: bold; background-color: #ffcc00; color: black")
+            button.setStyleSheet("font-size: 24px; font-weight: bold; background-color: #ffcc00; color: black")
             self.button_widgets.append(button)
 
         # Add image in the top right corner
@@ -294,7 +294,7 @@ class MainScreen(QMainWindow):
         h_layout.addWidget(self.logo_label)
         layout.addLayout(h_layout)
 
-        # Play background music for main screen
+        #Play background music for main screen
         self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\cantina.mp3")
 
     def update_credits_label(self):
@@ -332,7 +332,6 @@ class MainScreen(QMainWindow):
         pixmap = QPixmap(image_path)
         widget.setPixmap(pixmap)
 
-
 class TooltipWindow(QDialog):
     def __init__(self, tooltip_text):
         super().__init__()
@@ -360,8 +359,11 @@ class MarketplaceWindow(QWidget):
 
         # Dropdown menu for categories
         self.category_dropdown = QComboBox()
-        self.category_dropdown.addItems(["droid", "vehicle", "weapon","spaceship","republic_destroyer"])  # Add your categories here
+        self.category_dropdown.addItems(["creatures", "Astromechdroids", "Battledroids", "Maintenancedroids", "Medicaldroids", "Protocoldroids", "Corvettes", "Frigates", "Shuttles", "Star_Destroyers", "Starfighters", "Artilleries", "Battlevehicles", "Gunships", "Speederbikes", "Transportvehicles", "Blaster_Pistols", "Blaster_Rifles", "Repeating_Rifles", "Sniper_Rifle_Blasters", "Explosives", "Lightsabers"]) 
         self.category_dropdown.currentIndexChanged.connect(self.show_images)
+
+        # Dropdown menu for subcategories
+        self.subcategory_dropdown = QComboBox()
 
         # Create a scroll area for the images
         self.scroll_area = QScrollArea()
@@ -377,85 +379,184 @@ class MarketplaceWindow(QWidget):
         # Create a layout for the window
         layout = QVBoxLayout(self)
         layout.addWidget(self.category_dropdown)
+        layout.addWidget(self.subcategory_dropdown)
         layout.addWidget(self.scroll_area)
 
     def show_images(self):
         selected_category = self.category_dropdown.currentText()
-        if selected_category == "droid":
+        selected_subcategory = self.subcategory_dropdown.currentText()
+        image_paths = []
+        tooltips = []
+
+        if selected_category == "creatures":
             image_paths = [
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\b1.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\droid3.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\droid4.jpeg",
-                # Add more image paths for Category "droid"
+                "Pictures/Creatures/Bane-Back-Spider.jpg",
+                "Pictures/Creatures/Bog-rat.jpg",
+                "Pictures/Creatures/Chirodactyl.jpg",
+                "Pictures/Creatures/Flame-Beetle.jpeg",
+                "Pictures/Creatures/Jotaz.jpg",
+                "Pictures/Creatures/Mykal.jpg",
+                "Pictures/Creatures/Oggdo.jpg",
+                "Pictures/Creatures/Phillak.jpg",
+                "Pictures/Creatures/Scazz.jpg",
+                "Pictures/Creatures/Slyyyg.jpg",
+                "Pictures/Creatures/Splox.jpg",
+                "Pictures/Creatures/Wyyyschokk.jpg"
             ]
             tooltips = [
-                "B1 Battledroid",
-                "Destroyer Droid",
-                "Droid 3",
-                "Droid 4",
-                # Add more tooltips for Category "droid"
+                "Bane-Back-Spider",
+                "Bog-rat",
+                "Chirodactyl",
+                "Flame-Beetle",
+                "Jotaz",
+                "Mykal",
+                "Oggdo",
+                "Phillak",
+                "Scazz",
+                "Slyyyg",
+                "Splox",
+                "Wyyyschokk"
             ]
-        elif selected_category == "vehicle":
+            pass
+        elif selected_category == "Astromechdroids":
             image_paths = [
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\xWing.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle2.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle3.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\vehicle4.jpeg",
-                # Add more image paths for Category "vehicle"
+                "Pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg",
+                "Pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg"
             ]
             tooltips = [
-                "x-Wing",
-                "Vehicle 2",
-                "Vehicle 3",
-                "Vehicle 4",
-                # Add more tooltips for Category "vehicle"
+                "R-1-Astromechdroid",
+                "R-2-Astromechdroid",
+                "R-3-Astromechdroid",
+                "R-4-Astromechdroid",
+                "R-5-Astromechdroid",
+                "R-6-Astromechdroid",
+                "R-7-Astromechdroid",
+                "R-8-Astromechdroid",
+                "R-9-Astromechdroid"
             ]
-        elif selected_category == "weapon":
+            pass
+        elif selected_category == "Battledroids":
             image_paths = [
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon1.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon2.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon3.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\weapon4.jpeg",
-                # Add more image paths for Category "weapon"
+                "Pictures/Droids/Battledroids/R-1-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/Droideka-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg",
+                "Pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg"
             ]
             tooltips = [
-                "Weapon 1",
-                "Weapon 2",
-                "Weapon 3",
-                "Weapon 4",
-                # Add more tooltips for Category "weapon"
+                "R-1-Battledroid",
+                "B-2-Ha-Super-Battledroid",
+                "B-2-Super-Battledroid",
+                "Bx-Kommando-Battledroid",
+                "Droideka-Battledroid",
+                "Dwarf-Spider-Battledroid",
+                "IG-86-Wächter-Battledroid",
+                "IG-100-Magna-Battledroid"
             ]
-        elif selected_category == "spaceship":
+            pass
+        elif selected_category == "Maintenancedroids":
             image_paths = [
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship1.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship2.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship3.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\spaceship4.jpeg",
-                # Add more image paths for Category "spaceship"
+                "Pictures\Droids\Astromechdroids\R-1-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-2-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-3-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-4-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-5-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-6-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-7-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-8-Astromechdroid.jpg",
+                "Pictures\Droids\Astromechdroids\R-9-Astromechdroid.jpg"
             ]
             tooltips = [
-                "Spaceship 1",
-                "Spaceship 2",
-                "Spaceship 3",
-                "Spaceship 4",
-                # Add more tooltips for Category "spaceship"
+                "R-1-Astromechdroid",
+                "R-2-Astromechdroid",
+                "R-3-Astromechdroid",
+                "R-4-Astromechdroid",
+                "R-5-Astromechdroid",
+                "R-6-Astromechdroid",
+                "R-7-Astromechdroid",
+                "R-8-Astromechdroid",
+                "R-9-Astromechdroid"
             ]
-        elif selected_category == "republic_destroyer":
+            pass
+        elif selected_category == "Medicaldroids":
             image_paths = [
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer1.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer2.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer3.jpeg",
-                r"C:\Users\quent\OneDrive\Desktop\App_Programming\pictures\destroyer4.jpeg",
-                # Add more image paths for Category "republic_destroyer"
+                "Pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg",
+                "Pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg",
+                "Pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg",
+                "Pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg",
+                "Pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg",
+                "Pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg",
             ]
             tooltips = [
-                "Destroyer 1",
-                "Destroyer 2",
-                "Destroyer 3",
-                "Destroyer 4",
-                # Add more tooltips for Category "republic_destroyer"
+                "2-1B-Medicaldroid",
+                "8T88-Medicaldroid",
+                "DD-13-Medicaldroid",
+                "FX-Medicaldroid",
+                "IM-6-Medicaldroid",
+                "SP-4-Medicaldroid"
             ]
+            pass
+        elif selected_category == "Protocoldroids":
+
+            pass
+        elif selected_category == "Corvettes":
+
+            pass
+        elif selected_category == "Frigates":
+
+            pass
+        elif selected_category == "Shuttles":
+
+            pass
+        elif selected_category == "Star_Destroyers":
+
+            pass
+        elif selected_category == "Starfighters":
+
+            pass
+        elif selected_category == "Artilleries":
+
+            pass
+        elif selected_category == "Battlevehicles":
+
+            pass
+        elif selected_category == "Gunships":
+
+            pass
+        elif selected_category == "Speederbikes":
+
+            pass
+        elif selected_category == "Transportvehicles":
+
+            pass
+        elif selected_category == "Blaster_Pistols":
+
+            pass
+        elif selected_category == "Blaster_Rifles":
+
+            pass
+        elif selected_category == "Repeating_Rifles":
+
+            pass
+        elif selected_category == "Sniper_Rifle_Blasters":
+
+            pass
+        elif selected_category == "Explosives":
+
+            pass
+        elif selected_category == "Lightsabers":
+
+            pass
 
         # Clear existing images
         for i in reversed(range(self.scroll_layout.count())):
