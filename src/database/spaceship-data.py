@@ -330,7 +330,7 @@ def average_spaceship_length_from_manufacturer(manufacturer):
 
 # Outputs the shortest spaceship from a manufacturer
 def shortest_spaceship_from_manufacturer(manufacturer):
-    if category == "all":
+    if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE length=MIN(length)")
     else:
         result = cur.execute(f"SELECT * FROM spaceships WHERE length=MIN(length) AND manufacturer='{manufacturer}'")
@@ -390,7 +390,7 @@ def average_spaceship_width_from_manufacturer(manufacturer):
 
 # Outputs the least wide spaceship from a manufacturer
 def least_wide_spaceship_from_manufacturer(manufacturer):
-    if category == "all":
+    if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE width=MIN(width)")
     else:
         result = cur.execute(f"SELECT * FROM spaceships WHERE width=MIN(width) AND manufacturer='{manufacturer}'")
@@ -450,7 +450,7 @@ def average_spaceship_height_from_manufacturer(manufacturer):
 
 # Outputs the lowest spaceship from a manufacturer
 def lowest_spaceship_from_manufacturer(manufacturer):
-    if category == "all":
+    if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE height=MIN(height)")
     else:
         result = cur.execute(f"SELECT * FROM spaceships WHERE height=MIN(height) AND manufacturer='{manufacturer}'")
