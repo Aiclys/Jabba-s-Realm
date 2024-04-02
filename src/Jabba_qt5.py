@@ -81,7 +81,7 @@ class LoginScreen(QMainWindow):
         layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
 
         # Play background music for login screen
-        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\Login.mp3")
+        self.play_background_music(r"Audio\Login.mp3")
 
     def login(self):
         username = self.username_input.text()
@@ -93,7 +93,7 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"H:\Desktop\App_Programming\jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
@@ -173,7 +173,8 @@ class RegisterDialog(QDialog):
         region = self.region_dropdown.currentText()
 
         # Save user to the database
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
+        db_path = "H:\Desktop\App_Programming\jabbas-data_voll.db"
+        conn = sqlite3.connect(r"H:\Desktop\App_Programming\jabbas-data_voll.db")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 1000))
         conn.commit()
@@ -233,7 +234,7 @@ class ForgotPasswordDialog(QDialog):
             server.send_message(message)  # E-Mail senden
 
     def retrieve_password_from_database(self, email):
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"H:\Desktop\App_Programming\jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT password FROM users WHERE email=?", (email,))
         password = cursor.fetchone()
@@ -295,12 +296,12 @@ class MainScreen(QMainWindow):
         layout.addLayout(h_layout)
 
         #Play background music for main screen
-        self.play_background_music(r"C:\Users\quent\OneDrive\Desktop\App_Programming\Audio\cantina.mp3")
+        self.play_background_music(r"Audio\cantina.mp3")
 
     def update_credits_label(self):
         # Fetch credits from the database for the current user
         username = self.current_user
-        conn = sqlite3.connect(r"C:\Users\quent\OneDrive\Desktop\App_Programming\jabbas-data_voll.db")
+        conn = sqlite3.connect(r"H:\Desktop\App_Programming\jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT balance FROM users WHERE username=?", (username,))
         credits = cursor.fetchone()[0]  # Fetch the first column of the first row (assuming there's only one row)
@@ -507,55 +508,308 @@ class MarketplaceWindow(QWidget):
             ]
             pass
         elif selected_category == "Protocoldroids":
-
+            image_paths = [
+                "Pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg",
+                "Pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg",
+                "Pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg"
+            ]
+            tooltips = [
+                "3PO-Protocoldroid",
+                "CZ-Serie-Protocoldroid",
+                "RA-7-Protocoldroid"
+            ]
             pass
         elif selected_category == "Corvettes":
-
+            image_paths = [
+                "Pictures\Starships\Corvettes\CR-70-Corvette.jpg",
+                "Pictures\Starships\Corvettes\CR-90-Corvette.jpg",
+                "Pictures\Starships\Corvettes\CY-180-Corvette.jpg",
+                "Pictures\Starships\Corvettes\Raider-Class-Corvette.jpg",
+                "Pictures\Starships\Corvettes\Sphyrna-Class-Corvette.jpg"
+            ]
+            tooltips = [
+                "CR-70-Corvette",
+                "CR-90-Corvette",
+                "CY-180-Corvette",
+                "Raider-Class-Corvette",
+                "Sphyrna-Class-Cor"
+            ]
             pass
         elif selected_category == "Frigates":
-
+            image_paths = [
+                "Pictures\Starships\Frigates\Arquitens-Class-Frigate.jpg",
+                "Pictures\Starships\Frigates\Corona-Class-Frigate.jpg",
+                "Pictures\Starships\Frigates\EF-76-Nebulon-B-Frigate.jpg",
+                "Pictures\Starships\Frigates\Kontos-Class-Frigate.jpg",
+                "Pictures\Starships\Frigates\Munificent-Class-Frigate.jpg",
+                "Pictures\Starships\Frigates\Pelta-Class-Frigate.jpg"
+            ]
+            tooltips = [
+                "Arquitens-Class-Frigate",
+                "Corona-Class-Frigate",
+                "EF-76-Nebulon-B-Frigate",
+                "Kontos-Class-Frigate",
+                "Munificent-Class-Frigate",
+                "Pelta-Class-Frigate"
+            ]
             pass
         elif selected_category == "Shuttles":
-
+            image_paths = [
+                "Pictures\Starships\Shuttles\Delta-Class-T-3C-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\Eta-Class-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\H-2-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\Lambda-T-4A-Class-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\Nu-Class-Attack-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\Rho-Class-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\T-6-Shuttle.jpg",
+                "Pictures\Starships\Shuttles\Theta-Class-T-2C-Shuttle.jpg"
+            ]
+            tooltips = [
+                "Delta-Class-T-3C-Shuttle",
+                "Eta-Class-Shuttle",
+                "H-2-Shuttle",
+                "Lambda-T-4A-Class-Shuttle",
+                "Nu-Class-Attack-Shuttle",
+                "Rho-Class-Shuttle",
+                "T-6-Shuttle",
+                "Theta-Class-T-2C-Shuttle"
+            ]
             pass
         elif selected_category == "Star_Destroyers":
-
+            image_paths = [
+                "Pictures\Starships\Star_Destroyers\Immobilizer-418-Star_Destroyer.jpg",
+                "Pictures\Starships\Star_Destroyers\Venator-Class-Star_Destroyer.jpg"
+            ]
+            tooltips = [
+                "Immobilizer-418-Star_Destroyer",
+                "Venator-Class-Star_Destroyer"
+            ]
             pass
         elif selected_category == "Starfighters":
-
+            image_paths = [
+                "Pictures\Starships\Starfighters\A-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\B-MK2-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\E-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\TIE-Fighter-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\TIE-Interceptor-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\TIE-SA-Bomber-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\U-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\V-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\X-Wing-Starfighter.jpg",
+                "Pictures\Starships\Starfighters\Y-Wing-Starfighter.jpg"
+            ]
+            tooltips = [
+                "A-Wing-Starfighter",
+                "B-MK2-Wing-Starfighter",
+                "E-Wing-Starfighter",
+                "TIE-Fighter-Starfighter",
+                "TIE-Interceptor-Starfighter",
+                "TIE-SA-Bomber-Starfighter",
+                "U-Wing-Starfighter",
+                "V-Wing-Starfighter",
+                "X-Wing-Starfighter",
+                "Y-Wing-Starfighter"
+            ]
             pass
         elif selected_category == "Artilleries":
-
+            image_paths = [
+                "Pictures\Vehicles\Artilleries\AV-7-Artillery.jpg",
+                "Pictures\Vehicles\Artilleries\J1-Protonenkanone-Artillery.jpg",
+                "Pictures\Vehicles\Artilleries\SPHA-Artillery.jpg"
+            ]
+            tooltips = [
+                "AV-7-Artillery",
+                "J1-Protonenkanone-Artillery",
+                "SPHA-Artillery"
+            ]
             pass
         elif selected_category == "Battlevehicles":
-
+            image_paths = [
+                "Pictures\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpeg",
+                "Pictures\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg",
+                "Pictures\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg"
+            ]
+            tooltips = [
+                "AAT-Battlevehicle",
+                "AT-AP-Battlevehicle",
+                "AT-AT-Battlevehicle",
+                "AT-DP-Battlevehicle",
+                "AT-DT-Battlevehicle",
+                "AT-RT-Battlevehicle",
+                "AT-ST-Battlevehicle",
+                "AT-TE-Battlevehicle"
+            ]
             pass
         elif selected_category == "Gunships":
-
+            image_paths = [
+                "Pictures\Vehicles\Gunships\HMP-Droid-Gunship.jpg",
+                "Pictures\Vehicles\Gunships\LAAT-C-Gunship.jpg",
+                "Pictures\Vehicles\Gunships\LAAT-Gunship.jpg",
+                "Pictures\Vehicles\Gunships\VAAT-Gunship.jpg"
+            ]
+            tooltips = [
+                "HMP-Droid-Gunship",
+                "LAAT-C-Gunship",
+                "LAAT-Gunship",
+                "VAAT-Gunship"
+            ]
             pass
         elif selected_category == "Speederbikes":
-
+            image_paths = [
+                "Pictures\Vehicles\Speederbikes\74-Z-Speederbike.jpg",
+                "Pictures\Vehicles\Speederbikes\614-AvA-Speederbike.jpg",
+                "Pictures\Vehicles\Speederbikes\Barc-Speederbike.jpg",
+                "Pictures\Vehicles\Speederbikes\Ck-6-Speederbike.jpg",
+                "Pictures\Vehicles\Speederbikes\C-Ph-Patrol-Speederbike.jpg"
+            ]
+            tooltips = [
+                "74-Z-Speederbike",
+                "614-AvA-Speederbike",
+                "Barc-Speederbike",
+                "Ck-6-Speederbike",
+                "C-Ph-Patrol-Speederbike"
+            ]
             pass
         elif selected_category == "Transportvehicles":
-
+            image_paths = [
+                "Pictures\Vehicles\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg",
+                "Pictures\Vehicles\Transportvehicles\AT-OT-Transportvehicle.jpg",
+                "Pictures\Vehicles\Transportvehicles\MTT-Transportvehicle.jpg",
+                "Pictures\Vehicles\Transportvehicles\UT-AT-Transportvehicle.jpg"
+            ]
+            tooltips = [
+                "A6-Juggernauts-Transportvehicle",
+                "AT-OT-Transportvehicle",
+                "MTT-Transportvehicle",
+                "UT-AT-Transportvehicle"
+            ]
             pass
         elif selected_category == "Blaster_Pistols":
-
+            image_paths = [
+                "Pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\LL-30-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\MW-40-Bryar-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\NN-14-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\RK-3-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg",
+                "Pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg"
+            ]
+            tooltips = [
+                "DE-10-Blaster_Pistol",
+                "DH-16-Blaster_Pistol",
+                "DH-17-Blaster_Pistol",
+                "DL-18-Blaster_Pistol",
+                "DL-44-Blaster_Pistol",
+                "LL-30-Blaster_Pistol",
+                "MW-40-Bryar-Blaster_Pistol",
+                "NN-14-Blaster_Pistol",
+                "RK-3-Blaster_Pistol",
+                "S-5-Blaster_Pistol",
+                "S-195-Blaster_Pistol",
+                "SE-14-Blaster_Pistol",
+                "SE-44C-Blaster_Pistol",
+                "WESTAR-34-Blaster_Pistol"
+            ]
             pass
         elif selected_category == "Blaster_Rifles":
-
+            image_paths = [
+            "Pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\CR-2-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\E-5-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\E-10-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\E-11-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\E-22-Blaster_Rifle.jpg",
+            "Pictures\Weapons\Blasters\Blaster_Rifles\EL-16HFE-Blaster_Rifle.jpg"
+            ]
+            tooltips = [
+                "A-280-Blaster_Rifle",
+                "A-280C-Blaster_Rifle",
+                "CR-2-Blaster_Rifle",
+                "E-5-Blaster_Rifle",
+                "E-10-Blaster_Rifle",
+                "E-11-Blaster_Rifle",
+                "E-22-Blaster_Rifle",
+                "EL-16HFE-Blaster_Rifle"
+            ]
             pass
         elif selected_category == "Repeating_Rifles":
-
+            image_paths = [
+                "Pictures\Weapons\Blasters\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Repeating_Blasters\FWMB-10-Repeating_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Repeating_Blasters\T-21B-Repeating_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Repeating_Blasters\TL-50-Repeating_Blaster.jpg"
+            ]
+            tooltips = [
+                "DC-15A-Repeating_Blaster",
+                "DC-15LE-Repeating_Blaster",
+                "FWMB-10-Repeating_Blaster",
+                "T-21B-Repeating_Blaster",
+                "TL-50-Repeating_Blaster"
+            ]
             pass
         elif selected_category == "Sniper_Rifle_Blasters":
-
+            image_paths = [
+                "Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\Cycler-Sniper_Rifle_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\E-5S-Sniper_Rifle_Blaster.jpg",
+                "Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\Valken-38X-Sniper_Rifle_Blaster.jpg"
+            ]
+            tooltips = [
+                "Cycler-Sniper_Rifle_Blaster",
+                "DLT-19X-Sniper_Rifle_Blaster",
+                "DTL-20A-Sniper_Rifle_Blaster",
+                "E-5S-Sniper_Rifle_Blaster",
+                "Valken-38X-Sniper_Rifle_Blaster"
+            ]
             pass
         elif selected_category == "Explosives":
-
+            image_paths = [
+                "Pictures\Weapons\Explosives\C-25-Granate.jpg",
+                "Pictures\Weapons\Explosives\Flash-Granate.jpg",
+                "Pictures\Weapons\Explosives\Impact-Granate.jpg",
+                "Pictures\Weapons\Explosives\Ion-Granate.jpg",
+                "Pictures\Weapons\Explosives\Proton-Granate.jpg",
+                "Pictures\Weapons\Explosives\Shock-Granate.jpg",
+                "Pictures\Weapons\Explosives\Thermal-Detonator-Granate.jpg"
+            ]
+            tooltips = [
+                "C-25-Granate",
+                "Flash-Granate",
+                "Impact-Granate",
+                "Ion-Granate",
+                "Proton-Granate",
+                "Shock-Granate",
+                "Thermal-Detonator-Granate"
+            ]
             pass
         elif selected_category == "Lightsabers":
-
+            image_paths = [
+                "Pictures\Weapons\Lightsabers\Darksaber.jpg",
+                "Pictures\Weapons\Lightsabers\Lightsaber.jpg",
+                "Pictures\Weapons\Lightsabers\Lightsaber2.jpg",
+                "Pictures\Weapons\Lightsabers\Lightsaber3.jpg"
+            ]
+            tooltips = [
+                "Darksaber",
+                "Lightsaber",
+                "Lightsaber2",
+                "Lightsaber3"
+            ]
             pass
 
         # Clear existing images
