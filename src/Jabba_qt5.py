@@ -175,7 +175,7 @@ class RegisterDialog(QDialog):
         # Save user to the database
         conn = sqlite3.connect("jabbas-data.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 1000))
+        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 99999999999999999999))
         conn.commit()
         conn.close()
 
