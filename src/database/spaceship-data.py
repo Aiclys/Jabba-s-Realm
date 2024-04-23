@@ -622,7 +622,7 @@ def most_expensive_spaceship_without_hyperdrive(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE price=MAX(price) AND hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE price=MAX(price) AND category='{category}' AND hyperdrive=0")
+        result = cur.execute("SELECT * FROM spaceships WHERE price=MAX(price) AND category=? AND hyperdrive=0", (category, ))
 
     res = result.fetchall()
     return res
@@ -632,7 +632,7 @@ def average_spaceship_price_without_hyperdrive(category):
     if category == "all":
         result = cur.execute("SELECT AVG(price) FROM spaceships WHERE hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT AVG(price) FROM spaceships WHERE category='{category}' AND hyperdrive=0")
+        result = cur.execute("SELECT AVG(price) FROM spaceships WHERE category=? AND hyperdrive=0", (category, ))
 
     res = result.fetchall()
     return res
@@ -642,7 +642,7 @@ def cheapest_spaceship_without_hyperdrive(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE price=MIN(price) AND hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE price=MIN(price) AND category='{category}' AND hyperdrive=0")
+        result = cur.execute("SELECT * FROM spaceships WHERE price=MIN(price) AND category=? AND hyperdrive=0", (category, ))
 
     res = result.fetchall()
     return res
@@ -652,7 +652,7 @@ def most_expensive_spaceship_without_hyperdrive_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE price=MAX(price) AND hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE price=MAX(price) AND manufacturer='{manufacturer}' AND hyperdrive=0")
+        result = cur.execute("SELECT * FROM spaceships WHERE price=MAX(price) AND manufacturer=? AND hyperdrive=0", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -662,7 +662,7 @@ def average_spaceship_price_without_hyperdrive_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT AVG(price) FROM spaceships WHERE hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT AVG(price) FROM spaceships WHERE manufacturer='{manufacturer}' AND hyperdrive=0")
+        result = cur.execute("SELECT AVG(price) FROM spaceships WHERE manufacturer=? AND hyperdrive=0", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -672,7 +672,7 @@ def cheapest_spaceship_without_hyperdrive_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE price=MIN(price) AND hyperdrive=0")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE price=MIN(price) AND manufacturer='{manufacturer}' AND hyperdrive=0")
+        result = cur.execute("SELECT * FROM spaceships WHERE price=MIN(price) AND manufacturer=? AND hyperdrive=0", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -682,7 +682,7 @@ def fastest_spaceship(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND category='{category}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND category=?", (category, ))
 
     res = result.fetchall()
     return res
@@ -692,7 +692,7 @@ def slowest_spaceship(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND category='{category}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND category=?", (category, ))
 
     res = result.fetchall()
     return res
@@ -702,7 +702,7 @@ def fastest_spaceship(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND category='{category}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND category=?", (category, ))
 
     res = result.fetchall()
     return res
@@ -712,7 +712,7 @@ def average_spaceship_speed(category):
     if category == "all":
         result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships")
     else:
-        result = cur.execute(f"SELECT AVG(max_atmos_speed) FROM spaceships WHERE category='{category}'")
+        result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships WHERE category=?", (category, ))
 
     res = result.fetchall()
     return res
@@ -722,7 +722,7 @@ def slowest_spaceship(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND category='{category}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND category=?", (category, ))
 
     res = result.fetchall()
     return res
@@ -732,7 +732,7 @@ def fastest_spaceship_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND manufacturer='{manufacturer}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MAX(max_atmos_speed) AND manufacturer=?", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -742,7 +742,7 @@ def average_spaceship_speed_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships")
     else:
-        result = cur.execute(f"SELECT AVG(max_atmos_speed) FROM spaceships WHERE manufacturer='{manufacturer}'")
+        result = cur.execute("SELECT AVG(max_atmos_speed) FROM spaceships WHERE manufacturer=?", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -752,7 +752,7 @@ def slowest_spaceship_from_manufacturer(manufacturer):
     if manufacturer == "all":
         result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed)")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND manufacturer='{manufacturer}'")
+        result = cur.execute("SELECT * FROM spaceships WHERE max_atmos_speed=MIN(max_atmos_speed) AND manufacturer=?", (manufacturer, ))
 
     res = result.fetchall()
     return res
@@ -766,7 +766,7 @@ def sort_spaceships_by_id_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY id ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY id ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY id ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -776,7 +776,7 @@ def sort_spaceships_by_id_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY id DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY id DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY id DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -786,7 +786,7 @@ def sort_spaceships_by_name_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY name ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY name ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY name ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -796,7 +796,7 @@ def sort_spaceships_by_name_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY name DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY name DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY name DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -806,7 +806,7 @@ def sort_spaceships_by_price_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY price ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY price ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY price ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -816,7 +816,7 @@ def sort_spaceships_by_price_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY price DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY price DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY price DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -826,7 +826,7 @@ def sort_spaceships_by_length_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY length ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY length ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY length ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -836,7 +836,7 @@ def sort_spaceships_by_length_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY length DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY length DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY length DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -846,7 +846,7 @@ def sort_spaceships_by_width_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY width ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY width ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY width ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -856,7 +856,7 @@ def sort_spaceships_by_width_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY width DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY width DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY width DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -866,7 +866,7 @@ def sort_spaceships_by_height_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY height ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY height ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY height ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -876,7 +876,7 @@ def sort_spaceships_by_height_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY height DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY height DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY height DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -886,7 +886,7 @@ def sort_spaceships_by_crew_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY crew ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY crew ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY crew ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -896,7 +896,7 @@ def sort_spaceships_by_crew_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY crew DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY crew DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY crew DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -906,7 +906,7 @@ def sort_spaceships_by_speed_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY max_atmos_speed ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY max_atmos_speed ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY max_atmos_speed ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -916,7 +916,7 @@ def sort_spaceships_by_speed_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY max_atmos_speed DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY max_atmos_speed DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY max_atmos_speed DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -926,7 +926,7 @@ def sort_spaceships_by_turbolaser_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY turbolaser ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY turbolaser ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY turbolaser ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -936,7 +936,7 @@ def sort_spaceships_by_turbolaser_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY turbolaser DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY turbolaser DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY turbolaser DESC", (category, ))
 
     res = result.fetchall()
     return res
@@ -946,7 +946,7 @@ def sort_spaceships_by_torpedo_asc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY torpedo ASC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY torpedo ASC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY torpedo ASC", (category, ))
 
     res = result.fetchall()
     return res
@@ -956,7 +956,7 @@ def sort_spaceships_by_torpedo_desc(category):
     if category == "all":
         result = cur.execute("SELECT * FROM spaceships ORDER BY torpedo DESC")
     else:
-        result = cur.execute(f"SELECT * FROM spaceships WHERE category='{category}' ORDER BY torpedo DESC")
+        result = cur.execute("SELECT * FROM spaceships WHERE category=? ORDER BY torpedo DESC", (category, ))
 
     res = result.fetchall()
     return res
