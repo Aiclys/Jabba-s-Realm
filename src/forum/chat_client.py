@@ -11,9 +11,6 @@ import tkinter as tk
 class Send(threading.Thread):
     """
     Sending thread listens for user input from the command line.
-    Attributes:
-        sock (socket.socket): The connected socket object.
-        name (str): The username provided by the user.
     """
     def __init__(self, sock, name):
         super().__init__()
@@ -23,14 +20,13 @@ class Send(threading.Thread):
     def run(self):
         """
         Listens for user input from the command line only and sends it to the server.
-        Typing 'QUIT' will close the connection and exit the application.
         """
         while True:
             print('{}: '.format(self.name), end='')
             sys.stdout.flush()
             message = sys.stdin.readline()[:-1]
 
-            # Type 'QUIT' to leave the chatroom
+            # Type 'QUIT' to exit the chatroom
             if message == 'QUIT':
                 self.sock.sendall('Server: {} has left the chat.'.format(self.name).encode('ascii'))
                 break
@@ -79,7 +75,7 @@ class Receive(threading.Thread):
 
             else:
                 # Server has closed the socket, exit the program
-                print('\nOh no, we have lost connection to the server!')
+                print('\nNo connection with the server!')
                 print('\nQuitting...')
                 self.sock.close()
                 os._exit(0)
@@ -110,13 +106,13 @@ class Client:
         """
         print('Trying to connect to {}:{}...'.format(self.host, self.port))
         self.sock.connect((self.host, self.port))
-        print('Successfully connected to {}:{}'.format(self.host, self.port))
+        print('Successfully connected to {}:{}!'.format(self.host, self.port))
 
         print()
         self.name = input('Your name: ')
 
         print()
-        print('Welcome, {}! Getting ready to send and receive messages...'.format(self.name))
+        print('Welcome, {}! Talk to other people...'.format(self.name))
 
         # Create send and receive threads
         send = Send(self.sock, self.name)
@@ -127,7 +123,7 @@ class Client:
         receive.start()
 
         self.sock.sendall('Server: {} has joined the chat. Say hi!'.format(self.name).encode('ascii'))
-        print("\rAll set! Leave the chatroom anytime by typing 'QUIT'\n")
+        print("\rLeave the chatroom by typing 'QUIT'\n")
         print('{}: '.format(self.name), end = '')
 
         return receive
