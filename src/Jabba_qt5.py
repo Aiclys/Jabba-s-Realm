@@ -175,7 +175,7 @@ class RegisterDialog(QDialog):
         # Save user to the database
         conn = sqlite3.connect("jabbas-data.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 99999999999999999999))
+        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 99999999999999999))
         conn.commit()
         conn.close()
 
@@ -211,6 +211,7 @@ class ForgotPasswordDialog(QDialog):
             self.accept()
         else:
             QMessageBox.warning(self, "Password Retrieval Failed", "No user with this email exists.")
+
 
 
 class MainScreen(QMainWindow):
@@ -327,7 +328,7 @@ class MarketplaceWindow(QWidget):
 
         # Set window title and full-screen mode
         self.setWindowTitle("Marketplace")
-        self.showFullScreen()
+        self.setGeometry(100, 100, 500, 500)
 
         # Dropdown menu for categories
         self.category_dropdown = QComboBox()
@@ -438,26 +439,21 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Maintenancedroids":
             image_paths = [
-                r"Pictures\Droids\Astromechdroids\\R-1-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-2-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-3-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-4-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-5-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-6-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-7-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-8-Astromechdroid.jpg",
-                r"Pictures\Droids\Astromechdroids\\R-9-Astromechdroid.jpg"
+                r"Pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg",
+                r"Pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png",
+                r"Pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg",
+                r"Pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg",
+                r"Pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg",
+                r"Pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg"
+
             ]
             tooltips = [
-                "R-1-Astromechdroid",
-                "R-2-Astromechdroid",
-                "R-3-Astromechdroid",
-                "R-4-Astromechdroid",
-                "R-5-Astromechdroid",
-                "R-6-Astromechdroid",
-                "R-7-Astromechdroid",
-                "R-8-Astromechdroid",
-                "R-9-Astromechdroid"
+                "DUM-series-Maintenancedroid",
+                "EG-6-Maintenancedroid",
+                "GNK-Maintenancedroid",
+                "GO-TO-Maintenancedroid",
+                "MSE-6-Maintenancedroid",
+                "WED-Treadwell-Maintenancedroid"
             ]
             pass
         elif selected_category == "Medicaldroids":
@@ -800,7 +796,7 @@ class MarketplaceWindow(QWidget):
             placeholder_image.mousePressEvent = lambda event, tooltip=tooltip_text: self.show_tooltip(tooltip)
             self.scroll_layout.addWidget(placeholder_image, row, col)
             col += 1
-            if col == 7:  # Limit to 7 images per row
+            if col == 6:  # Limit to 6 images per row
                 row += 1
                 col = 0
 
