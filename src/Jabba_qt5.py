@@ -1,7 +1,7 @@
 import sys
 import sqlite3
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap, QPalette, QColor
+from PyQt5.QtGui import QPixmap, QPalette, QColor, QShowEvent
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl, Qt
 import smtplib
@@ -81,7 +81,7 @@ class LoginScreen(QMainWindow):
         layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
 
         # Play background music for login screen
-        self.play_background_music(r"Audio\\Login.mp3")
+        self.play_background_music(r"audio\\Login.mp3")
 
     def login(self):
         username = self.username_input.text()
@@ -93,7 +93,7 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect("jabbas-data.db")
+        conn = sqlite3.connect("./jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
@@ -173,7 +173,7 @@ class RegisterDialog(QDialog):
         region = self.region_dropdown.currentText()
 
         # Save user to the database
-        conn = sqlite3.connect("jabbas-data.db")
+        conn = sqlite3.connect("./jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 99999999999999999))
         conn.commit()
@@ -268,12 +268,12 @@ class MainScreen(QMainWindow):
         layout.addLayout(h_layout)
 
         #Play background music for main screen
-        self.play_background_music(r"Audio\cantina.mp3")
+        self.play_background_music(r"audio\cantina.mp3")
 
     def update_credits_label(self):
         # Fetch credits from the database for the current user
         username = self.current_user
-        conn = sqlite3.connect(r"H:\Desktop\App_Programming\jabbas-data.db")
+        conn = sqlite3.connect(r"jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT balance FROM users WHERE username=?", (username,))
         credits = cursor.fetchone()[0]  # Fetch the first column of the first row (assuming there's only one row)
@@ -326,17 +326,16 @@ class MarketplaceWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Set window title and full-screen mode
+        # Set window title
         self.setWindowTitle("Marketplace")
-        self.setGeometry(100, 100, 500, 500)
 
+
+        screen_geometry = QApplication.primaryScreen().geometry()
+        self.setGeometry(screen_geometry)
         # Dropdown menu for categories
         self.category_dropdown = QComboBox()
         self.category_dropdown.addItems(["creatures", "Astromechdroids", "Battledroids", "Maintenancedroids", "Medicaldroids", "Protocoldroids", "Corvettes", "Frigates", "Shuttles", "Star_Destroyers", "Starfighters", "Artilleries", "Battlevehicles", "Gunships", "Speederbikes", "Transportvehicles", "Blaster_Pistols", "Blaster_Rifles", "Repeating_Rifles", "Sniper_Rifle_Blasters", "Explosives", "Lightsabers"]) 
         self.category_dropdown.currentIndexChanged.connect(self.show_images)
-
-        # Dropdown menu for subcategories
-        self.subcategory_dropdown = QComboBox()
 
         # Create a scroll area for the images
         self.scroll_area = QScrollArea()
@@ -352,29 +351,32 @@ class MarketplaceWindow(QWidget):
         # Create a layout for the window
         layout = QVBoxLayout(self)
         layout.addWidget(self.category_dropdown)
-        layout.addWidget(self.subcategory_dropdown)
         layout.addWidget(self.scroll_area)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.show_images()
+
 
     def show_images(self):
         selected_category = self.category_dropdown.currentText()
-        selected_subcategory = self.subcategory_dropdown.currentText()
         image_paths = []
         tooltips = []
 
         if selected_category == "creatures":
             image_paths = [
-                r"Pictures/Creatures/Bane-Back-Spider.jpg",
-                r"Pictures/Creatures/Bog-rat.jpg",
-                r"Pictures/Creatures/Chirodactyl.jpg",
-                r"Pictures/Creatures/Flame-Beetle.jpeg",
-                r"Pictures/Creatures/Jotaz.jpg",
-                r"Pictures/Creatures/Mykal.jpg",
-                r"Pictures/Creatures/Oggdo.jpg",
-                r"Pictures/Creatures/Phillak.jpg",
-                r"Pictures/Creatures/Scazz.jpg",
-                r"Pictures/Creatures/Slyyyg.jpg",
-                r"Pictures/Creatures/Splox.jpg",
-                r"Pictures/Creatures/Wyyyschokk.jpg"
+                r"pictures/Creatures/Bane-Back-Spider.jpg",
+                r"pictures/Creatures/Bog-rat.jpg",
+                r"pictures/Creatures/Chirodactyl.jpg",
+                r"pictures/Creatures/Flame-Beetle.jpeg",
+                r"pictures/Creatures/Jotaz.jpg",
+                r"pictures/Creatures/Mykal.jpg",
+                r"pictures/Creatures/Oggdo.jpg",
+                r"pictures/Creatures/Phillak.jpg",
+                r"pictures/Creatures/Scazz.jpg",
+                r"pictures/Creatures/Slyyyg.jpg",
+                r"pictures/Creatures/Splox.jpg",
+                r"pictures/Creatures/Wyyyschokk.jpg"
             ]
             tooltips = [
                 "Bane-Back-Spider",
@@ -393,15 +395,15 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Astromechdroids":
             image_paths = [
-                r"Pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg",
-                r"Pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg"
+                r"pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg",
+                r"pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg"
             ]
             tooltips = [
                 "R-1-Astromechdroid",
@@ -417,14 +419,14 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Battledroids":
             image_paths = [
-                r"Pictures/Droids/Battledroids/R-1-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/Droideka-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg",
-                r"Pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg"
+                r"pictures/Droids/Battledroids/R-1-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/Droideka-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg",
+                r"pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg"
             ]
             tooltips = [
                 "R-1-Battledroid",
@@ -439,12 +441,12 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Maintenancedroids":
             image_paths = [
-                r"Pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg",
-                r"Pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png",
-                r"Pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg",
-                r"Pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg",
-                r"Pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg",
-                r"Pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg"
+                r"pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg",
+                r"pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png",
+                r"pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg",
+                r"pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg",
+                r"pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg",
+                r"pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg"
 
             ]
             tooltips = [
@@ -458,12 +460,12 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Medicaldroids":
             image_paths = [
-                r"Pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg",
-                r"Pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg",
-                r"Pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg",
-                r"Pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg",
-                r"Pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg",
-                r"Pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg",
+                r"pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg",
             ]
             tooltips = [
                 "2-1B-Medicaldroid",
@@ -476,9 +478,9 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Protocoldroids":
             image_paths = [
-                r"Pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg",
-                r"Pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg",
-                r"Pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg"
+                r"pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg",
+                r"pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg",
+                r"pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg"
             ]
             tooltips = [
                 "3PO-Protocoldroid",
@@ -488,11 +490,11 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Corvettes":
             image_paths = [
-                r"Pictures\Starships\\Corvettes\\CR-70-Corvette.jpg",
-                r"Pictures\Starships\\Corvettes\\CR-90-Corvette.jpg",
-                r"Pictures\Starships\\Corvettes\\CY-180-Corvette.jpg",
-                r"Pictures\Starships\\Corvettes\\Raider-Class-Corvette.jpg",
-                r"Pictures\Starships\\Corvettes\Sphyrna-Class-Corvette.jpg"
+                r"pictures\Starships\\Corvettes\\CR-70-Corvette.jpg",
+                r"pictures\Starships\\Corvettes\\CR-90-Corvette.jpg",
+                r"pictures\Starships\\Corvettes\\CY-180-Corvette.jpg",
+                r"pictures\Starships\\Corvettes\\Raider-Class-Corvette.jpg",
+                r"pictures\Starships\\Corvettes\Sphyrna-Class-Corvette.jpg"
             ]
             tooltips = [
                 "CR-70-Corvette",
@@ -504,12 +506,12 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Frigates":
             image_paths = [
-                r"Pictures\Starships\\Frigates\Arquitens-Class-Frigate.jpg",
-                r"Pictures\Starships\\Frigates\\Corona-Class-Frigate.jpg",
-                r"Pictures\Starships\\Frigates\\EF-76-Nebulon-B-Frigate.jpg",
-                r"Pictures\Starships\\Frigates\\Kontos-Class-Frigate.jpg",
-                r"Pictures\Starships\\Frigates\\Munificent-Class-Frigate.jpg",
-                r"Pictures\Starships\\Frigates\\Pelta-Class-Frigate.jpg"
+                r"pictures\Starships\\Frigates\Arquitens-Class-Frigate.jpg",
+                r"pictures\Starships\\Frigates\\Corona-Class-Frigate.jpg",
+                r"pictures\Starships\\Frigates\\EF-76-Nebulon-B-Frigate.jpg",
+                r"pictures\Starships\\Frigates\\Kontos-Class-Frigate.jpg",
+                r"pictures\Starships\\Frigates\\Munificent-Class-Frigate.jpg",
+                r"pictures\Starships\\Frigates\\Pelta-Class-Frigate.jpg"
             ]
             tooltips = [
                 "Arquitens-Class-Frigate",
@@ -522,14 +524,14 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Shuttles":
             image_paths = [
-                r"Pictures\Starships\Shuttles\Delta-Class-T-3C-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\Eta-Class-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\H-2-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\Lambda-T-4A-Class-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\Nu-Class-Attack-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\Rho-Class-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\T-6-Shuttle.jpg",
-                r"Pictures\Starships\Shuttles\\Theta-Class-T-2C-Shuttle.jpg"
+                r"pictures\Starships\Shuttles\Delta-Class-T-3C-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\Eta-Class-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\H-2-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\Lambda-T-4A-Class-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\Nu-Class-Attack-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\Rho-Class-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\T-6-Shuttle.jpg",
+                r"pictures\Starships\Shuttles\\Theta-Class-T-2C-Shuttle.jpg"
             ]
             tooltips = [
                 "Delta-Class-T-3C-Shuttle",
@@ -544,8 +546,8 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Star_Destroyers":
             image_paths = [
-                "Pictures\Starships\Star_Destroyers\Immobilizer-418-Star_Destroyer.jpg",
-                "Pictures\Starships\Star_Destroyers\Venator-Class-Star_Destroyer.jpg"
+                "pictures\Starships\Star_Destroyers\Immobilizer-418-Star_Destroyer.jpg",
+                "pictures\Starships\Star_Destroyers\Venator-Class-Star_Destroyer.jpg"
             ]
             tooltips = [
                 "Immobilizer-418-Star_Destroyer",
@@ -554,16 +556,16 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Starfighters":
             image_paths = [
-                r"Pictures\Starships\Starfighters\A-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\B-MK2-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\E-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\TIE-Fighter-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\TIE-Interceptor-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\TIE-SA-Bomber-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\U-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\V-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\X-Wing-Starfighter.jpg",
-                r"Pictures\Starships\Starfighters\\Y-Wing-Starfighter.jpg"
+                r"pictures\Starships\Starfighters\A-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\B-MK2-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\E-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\TIE-Fighter-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\TIE-Interceptor-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\TIE-SA-Bomber-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\U-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\V-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\X-Wing-Starfighter.jpg",
+                r"pictures\Starships\Starfighters\\Y-Wing-Starfighter.jpg"
             ]
             tooltips = [
                 "A-Wing-Starfighter",
@@ -580,9 +582,9 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Artilleries":
             image_paths = [
-                r"Pictures\Vehicles\Artilleries\AV-7-Artillery.jpg",
-                r"Pictures\Vehicles\Artilleries\\J1-Protonenkanone-Artillery.jpg",
-                r"Pictures\Vehicles\Artilleries\SPHA-Artillery.jpg"
+                r"pictures\Vehicles\Artilleries\AV-7-Artillery.jpg",
+                r"pictures\Vehicles\Artilleries\\J1-Protonenkanone-Artillery.jpg",
+                r"pictures\Vehicles\Artilleries\SPHA-Artillery.jpg"
             ]
             tooltips = [
                 "AV-7-Artillery",
@@ -592,14 +594,14 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Battlevehicles":
             image_paths = [
-                r"Pictures\\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpeg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg",
-                r"Pictures\\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg"
+                r"pictures\\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpeg",
+                r"pictures\\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg",
+                r"pictures\\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg"
             ]
             tooltips = [
                 "AAT-Battlevehicle",
@@ -614,10 +616,10 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Gunships":
             image_paths = [
-                r"Pictures\\Vehicles\\Gunships\\HMP-Droid-Gunship.jpg",
-                r"Pictures\\Vehicles\\Gunships\\LAAT-C-Gunship.jpg",
-                r"Pictures\\Vehicles\\Gunships\\LAAT-Gunship.jpg",
-                r"Pictures\\Vehicles\\Gunships\\VAAT-Gunship.jpg"
+                r"pictures\\Vehicles\\Gunships\\HMP-Droid-Gunship.jpg",
+                r"pictures\\Vehicles\\Gunships\\LAAT-C-Gunship.jpg",
+                r"pictures\\Vehicles\\Gunships\\LAAT-Gunship.jpg",
+                r"pictures\\Vehicles\\Gunships\\VAAT-Gunship.jpg"
             ]
             tooltips = [
                 "HMP-Droid-Gunship",
@@ -628,11 +630,11 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Speederbikes":
             image_paths = [
-                r"Pictures\\Vehicles\Speederbikes\\74-Z-Speederbike.jpg",
-                r"Pictures\\Vehicles\Speederbikes\\614-AvA-Speederbike.jpg",
-                r"Pictures\\Vehicles\Speederbikes\Barc-Speederbike.jpg",
-                r"Pictures\\Vehicles\Speederbikes\\Ck-6-Speederbike.jpg",
-                r"Pictures\\Vehicles\Speederbikes\\C-Ph-Patrol-Speederbike.jpg"
+                r"pictures\\Vehicles\Speederbikes\\74-Z-Speederbike.jpg",
+                r"pictures\\Vehicles\Speederbikes\\614-AvA-Speederbike.jpg",
+                r"pictures\\Vehicles\Speederbikes\Barc-Speederbike.jpg",
+                r"pictures\\Vehicles\Speederbikes\\Ck-6-Speederbike.jpg",
+                r"pictures\\Vehicles\Speederbikes\\C-Ph-Patrol-Speederbike.jpg"
             ]
             tooltips = [
                 "74-Z-Speederbike",
@@ -644,10 +646,10 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Transportvehicles":
             image_paths = [
-                r"Pictures\\Vehicles\\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg",
-                r"Pictures\\Vehicles\\Transportvehicles\AT-OT-Transportvehicle.jpg",
-                r"Pictures\\Vehicles\\Transportvehicles\\MTT-Transportvehicle.jpg",
-                r"Pictures\\Vehicles\\Transportvehicles\\UT-AT-Transportvehicle.jpg"
+                r"pictures\\Vehicles\\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg",
+                r"pictures\\Vehicles\\Transportvehicles\AT-OT-Transportvehicle.jpg",
+                r"pictures\\Vehicles\\Transportvehicles\\MTT-Transportvehicle.jpg",
+                r"pictures\\Vehicles\\Transportvehicles\\UT-AT-Transportvehicle.jpg"
             ]
             tooltips = [
                 "A6-Juggernauts-Transportvehicle",
@@ -658,20 +660,20 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Blaster_Pistols":
             image_paths = [
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\\LL-30-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\\MW-40-Bryar-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\\NN-14-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\\RK-3-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg",
-                r"Pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg"
+                r"pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\\LL-30-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\\MW-40-Bryar-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\\NN-14-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\\RK-3-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg",
+                r"pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg"
             ]
             tooltips = [
                 "DE-10-Blaster_Pistol",
@@ -692,14 +694,14 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Blaster_Rifles":
             image_paths = [
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\CR-2-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\E-5-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\E-10-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\E-11-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\E-22-Blaster_Rifle.jpg",
-            r"Pictures\Weapons\Blasters\Blaster_Rifles\\EL-16HFE-Blaster_Rifle.jpg"
+            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\CR-2-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-5-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-10-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-11-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-22-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\\EL-16HFE-Blaster_Rifle.jpg"
             ]
             tooltips = [
                 "A-280-Blaster_Rifle",
@@ -714,11 +716,11 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Repeating_Rifles":
             image_paths = [
-                r"Pictures\Weapons\Blasters\\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\\Repeating_Blasters\\FWMB-10-Repeating_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\\Repeating_Blasters\\T-21B-Repeating_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\\Repeating_Blasters\\TL-50-Repeating_Blaster.jpg"
+                r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg",
+                r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg",
+                r"pictures\Weapons\Blasters\\Repeating_Blasters\\FWMB-10-Repeating_Blaster.jpg",
+                r"pictures\Weapons\Blasters\\Repeating_Blasters\\T-21B-Repeating_Blaster.jpg",
+                r"pictures\Weapons\Blasters\\Repeating_Blasters\\TL-50-Repeating_Blaster.jpg"
             ]
             tooltips = [
                 "DC-15A-Repeating_Blaster",
@@ -730,11 +732,11 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Sniper_Rifle_Blasters":
             image_paths = [
-                r"Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Cycler-Sniper_Rifle_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\E-5S-Sniper_Rifle_Blaster.jpg",
-                r"Pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Valken-38X-Sniper_Rifle_Blaster.jpg"
+                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Cycler-Sniper_Rifle_Blaster.jpg",
+                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg",
+                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg",
+                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\E-5S-Sniper_Rifle_Blaster.jpg",
+                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Valken-38X-Sniper_Rifle_Blaster.jpg"
             ]
             tooltips = [
                 "Cycler-Sniper_Rifle_Blaster",
@@ -746,13 +748,13 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Explosives":
             image_paths = [
-                r"Pictures\Weapons\\Explosives\\C-25-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\\Flash-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\\Impact-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\\Ion-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\\Proton-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\Shock-Granate.jpg",
-                r"Pictures\Weapons\\Explosives\\Thermal-Detonator-Granate.jpg"
+                r"pictures\Weapons\\Explosives\\C-25-Granate.jpg",
+                r"pictures\Weapons\\Explosives\\Flash-Granate.jpg",
+                r"pictures\Weapons\\Explosives\\Impact-Granate.jpg",
+                r"pictures\Weapons\\Explosives\\Ion-Granate.jpg",
+                r"pictures\Weapons\\Explosives\\Proton-Granate.jpg",
+                r"pictures\Weapons\\Explosives\Shock-Granate.jpg",
+                r"pictures\Weapons\\Explosives\\Thermal-Detonator-Granate.jpg"
             ]
             tooltips = [
                 "C-25-Granate",
@@ -766,10 +768,10 @@ class MarketplaceWindow(QWidget):
             pass
         elif selected_category == "Lightsabers":
             image_paths = [
-                r"Pictures\Weapons\\Lightsabers\Darksaber.jpg",
-                r"Pictures\Weapons\\Lightsabers\\Lightsaber.jpg",
-                r"Pictures\Weapons\\Lightsabers\\Lightsaber2.jpg",
-                r"Pictures\Weapons\\Lightsabers\\Lightsaber3.jpg"
+                r"pictures\Weapons\\Lightsabers\Darksaber.jpg",
+                r"pictures\Weapons\\Lightsabers\\Lightsaber.jpg",
+                r"pictures\Weapons\\Lightsabers\\Lightsaber2.jpg",
+                r"pictures\Weapons\\Lightsabers\\Lightsaber3.jpg"
             ]
             tooltips = [
                 "Darksaber",
@@ -783,22 +785,35 @@ class MarketplaceWindow(QWidget):
         for i in reversed(range(self.scroll_layout.count())):
             self.scroll_layout.itemAt(i).widget().deleteLater()
 
+        # Calculate the number of columns based on the number of images
+        num_images = len(image_paths)
+        num_columns = min(num_images, 6)  # Limit to 6 images per row
+
+        # Calculate the width of each image widget
+        image_width = self.scroll_area.width() // num_columns
+
         # Add images to the scroll layout with tooltips
         row = 0
         col = 0
         for path, tooltip_text in zip(image_paths, tooltips):
             placeholder_image = QLabel()
             pixmap = QPixmap(path)
-            pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)  # Resize images to fit properly
-            placeholder_image.setPixmap(pixmap)
-            placeholder_image.setAlignment(Qt.AlignCenter)
-            placeholder_image.setToolTip(tooltip_text)  # Set the tooltip text
-            placeholder_image.mousePressEvent = lambda event, tooltip=tooltip_text: self.show_tooltip(tooltip)
-            self.scroll_layout.addWidget(placeholder_image, row, col)
-            col += 1
-            if col == 6:  # Limit to 6 images per row
-                row += 1
-                col = 0
+            if not pixmap.isNull() and pixmap.width() > 0:
+                # Calculate the height of the image based on its aspect ratio and the calculated width
+                image_height = pixmap.height() * image_width // pixmap.width()
+                pixmap = pixmap.scaled(image_width, image_height, Qt.KeepAspectRatio)
+                placeholder_image.setPixmap(pixmap)
+                placeholder_image.setAlignment(Qt.AlignCenter)
+                placeholder_image.setToolTip(tooltip_text)  # Set the tooltip text
+                placeholder_image.mousePressEvent = lambda event, tooltip=tooltip_text: self.show_tooltip(tooltip)
+                self.scroll_layout.addWidget(placeholder_image, row, col)
+                col += 1
+                if col == num_columns:  # Move to the next row when reaching the maximum number of columns
+                    row += 1
+                    col = 0
+            else:
+                print(f"Error loading the image: {path}")
+
 
     def show_tooltip(self, tooltip_text):
         self.tooltip_window = TooltipWindow(tooltip_text)
