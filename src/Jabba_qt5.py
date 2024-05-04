@@ -39,7 +39,7 @@ class LoginScreen(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Set background image using Stylesheet
-        background_image_path = r"pictures\Background_stern.png"  # Replace "background_image.jpg" with the path to your image
+        background_image_path = r"pictures\Background\bg.jpeg"  
         central_widget.setStyleSheet(f"background-image: url({background_image_path}); background-repeat: no-repeat; background-position: center;")
 
         layout = QVBoxLayout(central_widget)
@@ -306,21 +306,29 @@ class MainScreen(QMainWindow):
         widget.setPixmap(pixmap)
 
 class TooltipWindow(QDialog):
-    def __init__(self, tooltip_text):
+    def __init__(self, tooltip_text, image_path):
         super().__init__()
         self.setWindowTitle("Tooltip")
-        self.setGeometry(300, 300, 200, 100)
+        self.setGeometry(300, 300, 200, 150)
 
         layout = QVBoxLayout()
+
         self.tooltip_label = QLabel(tooltip_text)
         self.tooltip_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.tooltip_label)
+
+        # Add buy button
+        buy_button = QPushButton("Buy")
+        buy_button.clicked.connect(lambda: self.handle_purchase(image_path))
+        layout.addWidget(buy_button)
 
         exit_button = QPushButton("Exit")
         exit_button.clicked.connect(self.close)
         layout.addWidget(exit_button)
 
         self.setLayout(layout)
+
+
 
 class MarketplaceWindow(QWidget):
     def __init__(self):
@@ -805,7 +813,7 @@ class MarketplaceWindow(QWidget):
                 placeholder_image.setPixmap(pixmap)
                 placeholder_image.setAlignment(Qt.AlignCenter)
                 placeholder_image.setToolTip(tooltip_text)  # Set the tooltip text
-                placeholder_image.mousePressEvent = lambda event, tooltip=tooltip_text: self.show_tooltip(tooltip)
+                placeholder_image.mousePressEvent = lambda event, tooltip_text=tooltip_text, image_path=path: self.show_tooltip(tooltip_text, image_path)
                 self.scroll_layout.addWidget(placeholder_image, row, col)
                 col += 1
                 if col == num_columns:  # Move to the next row when reaching the maximum number of columns
@@ -813,10 +821,52 @@ class MarketplaceWindow(QWidget):
                     col = 0
             else:
                 print(f"Error loading the image: {path}")
+                # Create the buy button for each image
+        for path in image_paths:
+            buy_button = QPushButton("Buy")
+            buy_button.clicked.connect(lambda checked, path=path: self.handle_purchase(path))
+            self.scroll_layout.addWidget(buy_button)
 
+    def handle_purchase(self, image_path):
+        # Retrieve the cost of the image from the database or a predefined dictionary
+        # You might want to store the cost information alongside the image paths
+        cost = self.get_image_cost(image_path)
+        
+        # Prompt the user to confirm the purchase and specify quantity
+        quantity, ok = QInputDialog.getInt(self, "Purchase", f"Enter quantity for {image_path}:", 1, 1, 100, 1)
+        if ok:
+            total_cost = cost * quantity
+            confirmation = QMessageBox.question(self, "Confirm Purchase", f"Do you want to purchase {quantity} of {image_path} for {total_cost} credits?", QMessageBox.Yes | QMessageBox.No)
+            if confirmation == QMessageBox.Yes:
+                # Deduct credits from the user's balance in the database
+                success = self.deduct_credits(total_cost)
+                if success:
+                    QMessageBox.information(self, "Success", "Purchase successful!")
+                    # Update UI to reflect the changes in credits balance
+                    self.update_credits_balance_display()
+                else:
+                    QMessageBox.warning(self, "Error", "Insufficient credits!")
+            else:
+                QMessageBox.information(self, "Cancelled", "Purchase cancelled.")
 
-    def show_tooltip(self, tooltip_text):
-        self.tooltip_window = TooltipWindow(tooltip_text)
+    def get_image_cost(self, image_path):
+        # Retrieve the cost of the image from the database or a predefined dictionary
+        # For simplicity, you can use a dictionary mapping image paths to their costs
+        image_cost_dict = {...}  # Populate this dictionary with image paths as keys and their costs as values
+        return image_cost_dict.get(image_path, 0)
+
+    def deduct_credits(self, amount):
+        # Deduct credits from the user's balance in the database
+        # Implement database query to update the user's credits balance
+        # Return True if deduction was successful, False otherwise
+        return True  # Placeholder implementation
+
+    def update_credits_balance_display(self):
+        # Update the UI to reflect the changes in the user's credits balance
+        pass  # Placeholder implementation
+
+    def show_tooltip(self, tooltip_text, image_path):
+        self.tooltip_window = TooltipWindow(tooltip_text, image_path)
         self.tooltip_window.exec_()
 
 
