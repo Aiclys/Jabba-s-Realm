@@ -3,7 +3,7 @@ import sqlite3
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QPalette, QColor, QShowEvent
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtCore import QUrl, Qt, QTimer
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -28,57 +28,71 @@ class SubWindow(QWidget):
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.current_user = None  # Hinzufügen einer Instanzvariable für den aktuellen Benutzer
+        self.current_user = None  # variable für den aktuellen Benutzer
+        self.mediaPlayer = None  # Instanzvariable für MediaPlayer initialisieren
 
         # Set window title and size
         self.setWindowTitle("Login Screen")
-        self.setFixedSize(500, 300)
+        self.setFixedSize(600, 400)
 
-        # Create and set the background image directly on the central widget
+        # Set black background
+        self.setStyleSheet("background-color: black;")
+
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        # Set background image using Stylesheet
-        background_image_path = r"pictures\Background\bg.jpeg"  
-        central_widget.setStyleSheet(f"background-image: url({background_image_path}); background-repeat: no-repeat; background-position: center;")
-
         layout = QVBoxLayout(central_widget)
-        
-        # Add a yellow title
-        title_label = QLabel("Jabba's Realm")
+        layout.setAlignment(Qt.AlignHCenter)
+
+        # Add logo
+        logo_label = QLabel()
+        logo_pixmap = QPixmap("pictures\Background\logo.png")  
+        logo_pixmap = logo_pixmap.scaledToWidth(200) 
+        logo_label.setPixmap(logo_pixmap)
+        logo_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(logo_label)
+
+        # Add title
+        title_label = QLabel("Welcome to Jabba's Realm")
         title_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #ffcc00")
-        
+        title_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_label)
+
         # Create and add username input field
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Username")
-        
+        self.username_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
+        layout.addWidget(self.username_input)
+
         # Create and add password input field
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Password")
         self.password_input.setEchoMode(QLineEdit.Password)
-        
+        self.password_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
+        layout.addWidget(self.password_input)
+
         # Create and add login button
         self.login_button = QPushButton("Login")
         self.login_button.clicked.connect(self.login)
-        self.login_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
-        
+        self.login_button.setStyleSheet("font-size: 14px; background-color: #ffcc00; color: black")
+        layout.addWidget(self.login_button)
+
+        # Create horizontal layout for register and forgot password buttons
+        button_layout = QHBoxLayout()
+
         # Create and add register button
         self.register_button = QPushButton("Register")
         self.register_button.clicked.connect(self.register)
         self.register_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
+        button_layout.addWidget(self.register_button)
 
         # Create and add forgot password button
         self.forgot_password_button = QPushButton("Forgot Password?")
         self.forgot_password_button.clicked.connect(self.forgot_password)
         self.forgot_password_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
+        button_layout.addWidget(self.forgot_password_button)
 
-        # Layout setup
-        layout.addWidget(title_label, alignment=Qt.AlignCenter)
-        layout.addWidget(self.username_input, alignment=Qt.AlignCenter)
-        layout.addWidget(self.password_input, alignment=Qt.AlignCenter)
-        layout.addWidget(self.login_button, alignment=Qt.AlignCenter)
-        layout.addWidget(self.register_button, alignment=Qt.AlignCenter)
-        layout.addWidget(self.forgot_password_button, alignment=Qt.AlignCenter)
+        layout.addLayout(button_layout)
 
         # Play background music for login screen
         self.play_background_music(r"audio\\Login.mp3")
@@ -86,7 +100,7 @@ class LoginScreen(QMainWindow):
     def login(self):
         username = self.username_input.text()
         password = self.password_input.text()
-    
+
         # Check if username or password fields are empty
         if not username or not password:
             QMessageBox.warning(self, "Login Failed", "Please enter both username and password.")
@@ -98,7 +112,7 @@ class LoginScreen(QMainWindow):
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
         user = cursor.fetchone()
         conn.close()
-    
+
         # If user exists, go to main screen, otherwise show error message
         if user:
             self.current_user = username  # Set the current user
@@ -112,7 +126,7 @@ class LoginScreen(QMainWindow):
     def register(self):
         username = self.username_input.text()
         password = self.password_input.text()
-        
+
         # Open registration dialog
         dialog = RegisterDialog(self)
         if dialog.exec_():
@@ -143,21 +157,26 @@ class RegisterDialog(QDialog):
 
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Username")
+        self.username_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Password")
         self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
+        self.email_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         self.region_dropdown = QComboBox()
         self.region_dropdown.addItems(["Abafar", "Agamar", "Ahch-To", "Ajan Kloss", "Akiva", "Alderaan", "Aldhani", "Aleen", "Alzoc III", "Anaxes", "Ando", "Anoat", "Atollon", "Barton 4", "Balnab", "Batuu", "Bespin", "Bogano", "Bora Vio", "Bracca", "Cantonica", "Castilon", "Cato Neimoidia", "Chandrilla", "Chrustophsis", "Concord Dawn", "Corellia", "Coruscant", "Crait", "Daiyu", "D'Qar", "Dagobah", "Dantooine", "Dathomir", "Devaron", "Eadu", "Endor", "Er´kit", "Eriadu", "Esseles", "Exegol", "Felucia", "Ferrix", "Florrum", "Fondor", "Geonosis", "Hosnian Prime", "Hoth", "Illum", "Iridonia", "Jabiim", "Jakku", "Jedha", "Jelucan", "Jestefad", "Kamino", "Kashyyyk", "Kef Bir", "Kessel", "Kijimi", "Koboh", "Kuat", "Lah'mu", "Lothal", "Lotho Minor", "Malachor", "Malastare", "Mandalore", "Mapuzo", "Maridun", "Miban", "Mon Cala", "Moraband", "Mortis", "Mustafar", "Mygeeto", "Naboo", "Nal Hutta", "Nevarro", "Niamos", "Numidian Prime", "Nur", "Onderon", "Ord Mantell", "Ossus", "Pasaana", "Pillio", "Polis Massa", "Rishi", "Rodia", "Rugosa", "Ruusan", "Ryloth", "Saleucami", "Savareen", "Scarif", "Seatos", "Serenno", "Shili", "Sissubo", "Skako Minor", "Sorgan", "Subterrel", "Sullust", "Takodana", "Tanalor", "Umbara", "Utapau", "Vandor-1", "Vardos", "Wobani", "Wrea", "Yavin", "Yavin 4", "Zeffo", "Zygerria"
 ])  # Add your region options here
+        self.region_dropdown.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         register_button = QPushButton("Register")
         register_button.clicked.connect(self.register)
-        
+        register_button.setStyleSheet("font-size: 14px; background-color: #ffcc00; color: black")
+
         layout.addWidget(self.username_input)
         layout.addWidget(self.password_input)
         layout.addWidget(self.email_input)
@@ -193,9 +212,11 @@ class ForgotPasswordDialog(QDialog):
 
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
+        self.email_input.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         retrieve_password_button = QPushButton("Retrieve Password")
         retrieve_password_button.clicked.connect(self.retrieve_password_from_database)
+        retrieve_password_button.setStyleSheet("font-size: 14px; background-color: #ffcc00; color: black")
         
         layout.addWidget(self.email_input)
         layout.addWidget(retrieve_password_button)
@@ -212,99 +233,144 @@ class ForgotPasswordDialog(QDialog):
         else:
             QMessageBox.warning(self, "Password Retrieval Failed", "No user with this email exists.")
 
-
-
 class MainScreen(QMainWindow):
     def __init__(self, current_user):
         super().__init__()
-
-        self.current_user = current_user  # Store the current user
-
-        # Set window title and size
+        self.windows = {}
+        self.current_user = current_user
+        
         self.setWindowTitle("Main Screen")
-        self.setGeometry(100, 100, 500, 500)
-
-        # Set background color
+        self.showFullScreen()  # Vollbildmodus aktiviert
         self.setStyleSheet("background-color: black;")
 
-        # Add a fancy title
+        self.initUI()
+
+    def initUI(self):
         title_label = QLabel("Jabba's Realm")
-        title_label.setStyleSheet("font-size: 36px; font-weight: bold; color: #ffcc00")
+        title_label.setStyleSheet("font-family: Star Jedi; font-size: 48px; font-weight: bold; color: #ffcc00; text-shadow: 2px 2px 2px #000000")
+        title_label.setAlignment(Qt.AlignCenter)  # Zentrale Ausrichtung hinzugefügt
 
-        # Create and add buttons for news feed
+        logo_label = QLabel()
+        logo_pixmap = QPixmap("pictures/Background/logo.png")  
+        logo_pixmap = logo_pixmap.scaledToWidth(300) 
+        logo_label.setPixmap(logo_pixmap)
+
+        credits_label = QLabel()
+        credits_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffcc00")
+        self.update_credits_label(credits_label)
+
+        grid_layout = QGridLayout()
         button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
-        self.button_widgets = []
-        self.windows = {}  # Dictionary to store window objects
-        for name in button_names:
-            button = QPushButton(name)
-            button.clicked.connect(lambda state, button_name=name: self.open_sub_window(button_name))
-            button.setStyleSheet("font-size: 24px; font-weight: bold; background-color: #ffcc00; color: black")
-            self.button_widgets.append(button)
+        for index, name in enumerate(button_names):
+            button = self.createButton(name)
+            button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffcc00; border-radius: 20px; padding: 15px 30px;")
+            button.setMaximumWidth(1100) 
+            button.setMinimumHeight(90) 
+            grid_layout.addWidget(button, index, 0, 1, 1, alignment=Qt.AlignCenter)
 
-        # Add image in the top right corner
-        self.logo_label = QLabel()
-        self.logo_label.setScaledContents(True)
-        self.set_background_image(self.logo_label, "pictures/credits.png")
-
-        # Label to display credits
-        self.credits_label = QLabel()
-        self.credits_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #ffcc00")
-        self.update_credits_label()  # Update credits label initially
-
-        # Layout setup
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
-        layout.addWidget(title_label, alignment=Qt.AlignCenter)
-        for button in self.button_widgets:
-            layout.addWidget(button, alignment=Qt.AlignCenter)
-        layout.addWidget(self.credits_label, alignment=Qt.AlignRight)  # Add credits label
-        layout.addStretch(1)
 
-        # Horizontal layout for logo
-        h_layout = QHBoxLayout()
-        h_layout.addStretch(1)
-        h_layout.addWidget(self.logo_label)
-        layout.addLayout(h_layout)
+        layout.addWidget(logo_label, alignment=Qt.AlignCenter) 
+        layout.addWidget(title_label, alignment=Qt.AlignCenter)  
+        layout.addStretch(1) 
+        layout.addLayout(grid_layout) 
+        layout.addWidget(credits_label, alignment=Qt.AlignRight)
 
-        #Play background music for main screen
         self.play_background_music(r"audio\cantina.mp3")
 
-    def update_credits_label(self):
-        # Fetch credits from the database for the current user
-        username = self.current_user
-        conn = sqlite3.connect(r"jabbas-data.db")
-        cursor = conn.cursor()
-        cursor.execute("SELECT balance FROM users WHERE username=?", (username,))
-        credits = cursor.fetchone()[0]  # Fetch the first column of the first row (assuming there's only one row)
-        conn.close()
+    def createButton(self, name):
+        button = QPushButton(name)
+        button.setStyleSheet("""
+            QPushButton {
+                font-size: 24px;
+                font-weight: bold;
+                color: black;
+                background-color: #ffcc00;
+                border-radius: 20px;
+                padding: 15px 30px;
+                min-width: 200px; /* Mindestbreite für den Button */
+                max-width: 400px; /* Maximale Breite für den Button */
+            }
+            QPushButton:hover {
+                background-color: #ffaa00; /* Farbe ändern, wenn der Mauszeiger über den Button bewegt wird */
+            }
+        """)
+        button.clicked.connect(lambda state, button_name=name: self.open_sub_window(button_name))
+        return button
 
-        self.credits_label.setText(f"Credits: {credits}")
+
+
+    def buttonClicked(self, button):
+        button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffaa00; border-radius: 10px; padding: 10px;")
+
+        # Rückmeldung nach einer Sekunde
+        QTimer.singleShot(1000, lambda: self.resetButtonStyle(button))
+
+    def resetButtonStyle(self, button):
+        button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffcc00; border-radius: 10px; padding: 10px;")
+
+    def update_credits_label(self, label):
+        with sqlite3.connect(r"jabbas-data.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT balance FROM users WHERE username=?", (self.current_user,))
+            credits = cursor.fetchone()[0]
+            label.setText(f"Credits: {credits}")
 
     def open_sub_window(self, name):
-        if name not in self.windows:
-            if name == "Marketplace":
-                self.windows[name] = MarketplaceWindow()  # Store the window object in the dictionary
-            elif name == "Jabba's Stocks":
-                self.windows[name] = StocksWindow()
-            elif name == "Hutts Playground":
-                self.windows[name] = PlaygroundWindow()
-            elif name == "Jabba's Hangout":
-                self.windows[name] = HangoutWindow()
-        self.windows[name].show()  # Show the window
+        if self.current_user:
+            if name not in self.windows:
+                if name == "Marketplace":
+                    self.windows[name] = MarketplaceWindow()
+                elif name == "Jabba's Stocks":
+                    self.windows[name] = StocksWindow()
+                elif name == "Hutts Playground":
+                    self.windows[name] = PlaygroundWindow()
+                elif name == "Jabba's Hangout":
+                    self.windows[name] = HangoutWindow()
+            self.windows[name].show()
+        else:
+            QMessageBox.warning(self, "Login Required", "Please login to access this feature.")
 
     def play_background_music(self, music_file):
-        self.mediaPlayer = QMediaPlayer()
-        url = QUrl.fromLocalFile(music_file)
-        content = QMediaContent(url)
-        self.mediaPlayer.setMedia(content)
-        self.mediaPlayer.setVolume(30)
-        self.mediaPlayer.play()
+        if QMediaPlayer.supportedMimeTypes():
+            self.mediaPlayer = QMediaPlayer()
+            url = QUrl.fromLocalFile(music_file)
+            content = QMediaContent(url)
+            self.mediaPlayer.setMedia(content)
+            self.mediaPlayer.setVolume(30)
+            self.mediaPlayer.play()
 
-    def set_background_image(self, widget, image_path):
-        pixmap = QPixmap(image_path)
-        widget.setPixmap(pixmap)
+    def addLogo(self, small=False):
+        logo_label = QLabel()
+        logo_label.setScaledContents(True)
+        
+        if small:
+            logo_pixmap = QPixmap("pictures/credits_small.png")
+        else:
+            logo_pixmap = QPixmap("pictures/credits.png")
+            
+        logo_label.setPixmap(logo_pixmap)
+        
+        h_layout = QHBoxLayout()
+        h_layout.addStretch(1)
+        h_layout.addWidget(logo_label)
+        
+        central_widget = self.centralWidget()
+        central_layout = central_widget.layout()
+        
+        if isinstance(central_layout, QVBoxLayout):
+            central_layout.insertLayout(0, h_layout)
+        elif isinstance(central_layout, QGridLayout):
+            central_layout.insertLayout(0, h_layout, 0, 0, alignment=Qt.AlignRight)
 
+        
+        window_rect = self.frameGeometry()
+        center_point = QDesktopWidget().availableGeometry().center()
+        window_rect.moveCenter(center_point)
+        self.move(window_rect.topLeft())
+"""
 class TooltipWindow(QDialog):
     def __init__(self, tooltip_text, image_path):
         super().__init__()
@@ -327,36 +393,229 @@ class TooltipWindow(QDialog):
         layout.addWidget(exit_button)
 
         self.setLayout(layout)
+"""
+IMAGE_COSTS = {
+        r"pictures/Creatures/Bane-Back-Spider.jpg": 10,
+        r"pictures/Creatures/Bog-rat.jpg": 10,
+        r"pictures/Creatures/Chirodactyl.jpg": 10,
+        r"pictures/Creatures/Flame-Beetle.jpeg": 10,
+        r"pictures/Creatures/Jotaz.jpg": 10,
+        r"pictures/Creatures/Mykal.jpg": 10,
+        r"pictures/Creatures/Oggdo.jpg": 10,
+        r"pictures/Creatures/Phillak.jpg": 10,
+        r"pictures/Creatures/Scazz.jpg": 10,
+        r"pictures/Creatures/Slyyyg.jpg": 10,
+        r"pictures/Creatures/Splox.jpg": 10,
+        r"pictures/Creatures/Wyyyschokk.jpg": 10,
+        r"pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg": 20,
+        r"pictures/Droids/Battledroids/R-1-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/Droideka-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg": 30,
+        r"pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg": 30,
+        r"pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg": 40,
+        r"pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png": 40,
+        r"pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg": 40,
+        r"pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg": 40,
+        r"pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg": 40,
+        r"pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg": 40,
+        r"pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg": 50,
+        r"pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg": 60,
+        r"pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg": 60,
+        r"pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg": 60,
+        r"pictures\Starships\\Corvettes\\CR-70-Corvette.jpg": 70,
+        r"pictures\Starships\\Corvettes\\CR-90-Corvette.jpg": 70,
+        r"pictures\Starships\\Corvettes\\CY-180-Corvette.jpg": 70,
+        r"pictures\Starships\\Corvettes\\Sacheen.jpg": 70,
+        r"pictures\Starships\\Corvettes\\Tantive-IV.jpg": 70,
+        r"pictures\Starships\\Cruisers\\Arquitens-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Consular-Class-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Hammerhead-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Munificent-Class-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Pelta-Class-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Recusant-Class-Light-Destroyer.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Republic-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Subjugator-Class-Heavy-Cruiser.jpg": 80,
+        r"pictures\Starships\\Cruisers\\Venator-Class-Star-Destroyer.jpg": 80,
+        r"pictures\Starships\\Destroyers\\Assertor-Class-Command-Dreadnought.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Eclipse-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Executor-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Imperial-I-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Imperial-II-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Interdictor-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Secutor-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Sovereign-Class-Star-Dreadnought.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Super-Command-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Victory-I-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Destroyers\\Victory-II-Class-Star-Destroyer.jpg": 90,
+        r"pictures\Starships\\Freighters\\Carrack-Light-Cruiser.jpg": 100,
+        r"pictures\Starships\\Freighters\\GR-75-Medium-Transport.jpg": 100,
+        r"pictures\Starships\\Freighters\\Liberator-Class-Cruiser.jpg": 100,
+        r"pictures\Starships\\Freighters\\Lucrehulk-Class-Battleship.jpg": 100,
+        r"pictures\Starships\\Freighters\\Pelta-Class-Transport.jpg": 100,
+        r"pictures\Starships\\Freighters\\Radiant-VII.jpg": 100,
+        r"pictures\Starships\\Freighters\\YT-1300-Light-Freighter.jpg": 100,
+        r"pictures\Starships\\Freighters\\YT-1760-Light-Freighter.jpg": 100,
+        r"pictures\Starships\\Freighters\\YT-2400-Light-Freighter.jpg": 100,
+        r"pictures\Starships\\Frigates\\DP20-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\EF76-Nebulon-B-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\EF76-II-Nebulon-B-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\Lancer-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\Munificent-Class-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\Nebulon-B2-Frigate.jpg": 110,
+        r"pictures\Starships\\Frigates\\Pelta-Class-Frigate.jpg": 110,
+        r"pictures\Starships\\Gunships\\Acclamator-I-Class-Assault-Ship.jpg": 120,
+        r"pictures\Starships\\Gunships\\Acclamator-II-Class-Assault-Ship.jpg": 120,
+        r"pictures\Starships\\Gunships\\LAAT-Gunship.jpg": 120,
+        r"pictures\Starships\\Gunships\\LAAT-I-Gunship.jpg": 120,
+        r"pictures\Starships\\Gunships\\LAAT-II-Gunship.jpg": 120,
+        r"pictures\Starships\\Gunships\\LAAT-III-Gunship.jpg": 120,
+        r"pictures\Starships\\Gunships\\Low-Altitude-Assault-Transport.jpg": 120,
+        r"pictures\Starships\\Gunships\\Low-Altitude-Assault-Transport-Carrier.jpg": 120,
+        r"pictures\Starships\\Shuttles\\AA-9-Coruscant-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Delta-Class-T-3C-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Droch-Class-Boarding-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Epsilon-Class-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\H-Type-Nubian-Yacht.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Imperial-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Kappa-Class-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Lambda-Class-T-4a-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Nu-Class-Attack-Shuttle.jpg": 130,
+        r"pictures\Starships\\Shuttles\\Sentinel-Class-Shuttle.jpg": 130,
+        r"pictures\Starships\\Starfighters\\Aurek-Class-Tactical-Strikefighter.jpg": 140,
+        r"pictures\Starships\\Starfighters\\Belbullab-22-Starfighter.jpg": 140,
+        r"pictures\Starships\\Starfighters\\Eta-2-Actis-Class-Interceptor.jpg": 140,
+        r"pictures\Starships\\Starfighters\\Eta-5-Interceptor.jpg": 140,
+        r"pictures\Starships\\Starfighters\\Fang-Fighter.jpg": 140,
+        r"pictures\Starships\\Starfighters\\TIE-Bomber.jpg": 140,
+        r"pictures\Starships\\Starfighters\\TIE-Fighter.jpg": 140,
+        r"pictures\Starships\\Starfighters\\V-19-Torrent-Interceptor.jpg": 140,
+        r"pictures\Starships\\Starfighters\\V-Wing-Interceptor.jpg": 140,
+        r"pictures\Starships\Starfighters\\X-Wing-Starfighter.jpg": 10,
+        r"pictures\Starships\Starfighters\\Y-Wing-Starfighter.jpg": 10,
+        r"pictures\\Vehicles\Artilleries\AV-7-Artillery.jpg": 10,
+        r"pictures\\Vehicles\Artilleries\\1-Protonenkanone-Artillery.jpg": 10,
+        r"pictures\\Vehicles\Artilleries\SPHA-Artillery.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg": 10,
+        r"pictures\\Vehicles\\Gunships\\HMP-Droid-Gunship.jpg": 10,
+        r"pictures\\Vehicles\\Gunships\\LAAT-C-Gunship.jpg": 10,
+        r"pictures\\Vehicles\\Gunships\\LAAT-Gunship.jpg": 10,
+        r"pictures\\Vehicles\\Gunships\\VAAT-Gunship.jpg": 10,
+        r"pictures\\Vehicles\Speederbikes\\74-Z-Speederbike.jpg": 10,
+        r"pictures\\Vehicles\Speederbikes\\614-AvA-Speederbike.jpg": 10,
+        r"pictures\\Vehicles\Speederbikes\Barc-Speederbike.jpg": 10,
+        r"pictures\\Vehicles\Speederbikes\\Ck-6-Speederbike.jpg": 10,
+        r"pictures\\Vehicles\Speederbikes\\C-Ph-Patrol-Speederbike.jpg": 10,
+        r"pictures\\Vehicles\\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg": 10,
+        r"pictures\\Vehicles\\Transportvehicles\AT-OT-Transportvehicle.jpg": 10,
+        r"pictures\\Vehicles\\Transportvehicles\\MTT-Transportvehicle.jpg": 10,
+        r"pictures\\Vehicles\\Transportvehicles\\UT-AT-Transportvehicle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\\LL-30-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\\MW-40-Bryar-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\\NN-14-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\\RK-3-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\CR-2-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\E-5-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\E-10-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\E-11-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\E-22-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\Blaster_Rifles\\EL-16HFE-Blaster_Rifle.jpg": 10,
+        r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\\Repeating_Blasters\\FWMB-10-Repeating_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\\Repeating_Blasters\\T-21B-Repeating_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\\Repeating_Blasters\\TL-50-Repeating_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Cycler-Sniper_Rifle_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\E-5S-Sniper_Rifle_Blaster.jpg": 10,
+        r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Valken-38X-Sniper_Rifle_Blaster.jpg": 10,
+        r"pictures\Weapons\\Explosives\\C-25-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\\Flash-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\\Impact-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\\Ion-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\\Proton-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\Shock-Granate.jpg": 10,
+        r"pictures\Weapons\\Explosives\\Thermal-Detonator-Granate.jpg": 10,
+        r"pictures\Weapons\\Lightsabers\Darksaber.jpg": 10,
+        r"pictures\Weapons\\Lightsabers\\Lightsaber.jpg": 10,
+        r"pictures\Weapons\\Lightsabers\\Lightsaber2.jpg": 10,
+        r"pictures\Weapons\\Lightsabers\\Lightsaber3.jpg": 10
+    }
+
+class TooltipWindow(QDialog):
+    def __init__(self, tooltip_text, image_path):
+        super().__init__()
+        self.setWindowTitle("Tooltip")
+
+        layout = QVBoxLayout()
+        label = QLabel(tooltip_text)
+        layout.addWidget(label)
+
+        self.setLayout(layout)
+        self.setWindowModality(Qt.WindowModal)
+        self.setFixedSize(300, 200)
+        self.setPixmap(QPixmap(image_path))
 
 
 
 class MarketplaceWindow(QWidget):
+
     def __init__(self):
         super().__init__()
-
-        # Set window title
         self.setWindowTitle("Marketplace")
-
 
         screen_geometry = QApplication.primaryScreen().geometry()
         self.setGeometry(screen_geometry)
-        # Dropdown menu for categories
+
         self.category_dropdown = QComboBox()
         self.category_dropdown.addItems(["creatures", "Astromechdroids", "Battledroids", "Maintenancedroids", "Medicaldroids", "Protocoldroids", "Corvettes", "Frigates", "Shuttles", "Star_Destroyers", "Starfighters", "Artilleries", "Battlevehicles", "Gunships", "Speederbikes", "Transportvehicles", "Blaster_Pistols", "Blaster_Rifles", "Repeating_Rifles", "Sniper_Rifle_Blasters", "Explosives", "Lightsabers"]) 
         self.category_dropdown.currentIndexChanged.connect(self.show_images)
 
-        # Create a scroll area for the images
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.inner_widget = QWidget(self.scroll_area)
         self.scroll_area.setWidget(self.inner_widget)
         self.scroll_layout = QGridLayout(self.inner_widget)
-        self.scroll_layout.setHorizontalSpacing(0)  # Set horizontal spacing to 0
+        self.scroll_layout.setHorizontalSpacing(0)
 
-        # Initial images (placeholder)
         self.show_images()
 
-        # Create a layout for the window
         layout = QVBoxLayout(self)
         layout.addWidget(self.category_dropdown)
         layout.addWidget(self.scroll_area)
@@ -364,7 +623,6 @@ class MarketplaceWindow(QWidget):
     def showEvent(self, event):
         super().showEvent(event)
         self.show_images()
-
 
     def show_images(self):
         selected_category = self.category_dropdown.currentText()
@@ -789,60 +1047,48 @@ class MarketplaceWindow(QWidget):
             ]
             pass
 
-        # Clear existing images
         for i in reversed(range(self.scroll_layout.count())):
             self.scroll_layout.itemAt(i).widget().deleteLater()
 
-        # Calculate the number of columns based on the number of images
         num_images = len(image_paths)
-        num_columns = min(num_images, 6)  # Limit to 6 images per row
-
-        # Calculate the width of each image widget
+        num_columns = min(num_images, 6)
         image_width = self.scroll_area.width() // num_columns
 
-        # Add images to the scroll layout with tooltips
         row = 0
         col = 0
         for path, tooltip_text in zip(image_paths, tooltips):
             placeholder_image = QLabel()
             pixmap = QPixmap(path)
             if not pixmap.isNull() and pixmap.width() > 0:
-                # Calculate the height of the image based on its aspect ratio and the calculated width
                 image_height = pixmap.height() * image_width // pixmap.width()
                 pixmap = pixmap.scaled(image_width, image_height, Qt.KeepAspectRatio)
                 placeholder_image.setPixmap(pixmap)
                 placeholder_image.setAlignment(Qt.AlignCenter)
-                placeholder_image.setToolTip(tooltip_text)  # Set the tooltip text
+                placeholder_image.setToolTip(tooltip_text)
                 placeholder_image.mousePressEvent = lambda event, tooltip_text=tooltip_text, image_path=path: self.show_tooltip(tooltip_text, image_path)
                 self.scroll_layout.addWidget(placeholder_image, row, col)
                 col += 1
-                if col == num_columns:  # Move to the next row when reaching the maximum number of columns
+                if col == num_columns:
                     row += 1
                     col = 0
             else:
                 print(f"Error loading the image: {path}")
-                # Create the buy button for each image
+
         for path in image_paths:
             buy_button = QPushButton("Buy")
             buy_button.clicked.connect(lambda checked, path=path: self.handle_purchase(path))
             self.scroll_layout.addWidget(buy_button)
 
     def handle_purchase(self, image_path):
-        # Retrieve the cost of the image from the database or a predefined dictionary
-        # You might want to store the cost information alongside the image paths
         cost = self.get_image_cost(image_path)
-        
-        # Prompt the user to confirm the purchase and specify quantity
         quantity, ok = QInputDialog.getInt(self, "Purchase", f"Enter quantity for {image_path}:", 1, 1, 100, 1)
         if ok:
             total_cost = cost * quantity
             confirmation = QMessageBox.question(self, "Confirm Purchase", f"Do you want to purchase {quantity} of {image_path} for {total_cost} credits?", QMessageBox.Yes | QMessageBox.No)
             if confirmation == QMessageBox.Yes:
-                # Deduct credits from the user's balance in the database
                 success = self.deduct_credits(total_cost)
                 if success:
                     QMessageBox.information(self, "Success", "Purchase successful!")
-                    # Update UI to reflect the changes in credits balance
                     self.update_credits_balance_display()
                 else:
                     QMessageBox.warning(self, "Error", "Insufficient credits!")
@@ -850,25 +1096,20 @@ class MarketplaceWindow(QWidget):
                 QMessageBox.information(self, "Cancelled", "Purchase cancelled.")
 
     def get_image_cost(self, image_path):
-        # Retrieve the cost of the image from the database or a predefined dictionary
-        # For simplicity, you can use a dictionary mapping image paths to their costs
-        image_cost_dict = {...}  # Populate this dictionary with image paths as keys and their costs as values
-        return image_cost_dict.get(image_path, 0)
+        return self.IMAGE_COSTS.get(image_path, 0)
 
     def deduct_credits(self, amount):
-        # Deduct credits from the user's balance in the database
-        # Implement database query to update the user's credits balance
-        # Return True if deduction was successful, False otherwise
-        return True  # Placeholder implementation
+        # Hier würde der Code stehen, um die Credits vom Benutzerkonto abzuziehen
+        # In dieser Platzhalter-Implementierung geben wir einfach True zurück
+        return True
 
     def update_credits_balance_display(self):
-        # Update the UI to reflect the changes in the user's credits balance
-        pass  # Placeholder implementation
+        # Hier würde der Code stehen, um die Anzeige des aktuellen Guthabens des Benutzers zu aktualisieren
+        # In dieser Platzhalter-Implementierung tun wir nichts
+        pass
 
     def show_tooltip(self, tooltip_text, image_path):
-        self.tooltip_window = TooltipWindow(tooltip_text, image_path)
-        self.tooltip_window.exec_()
-
+        QMessageBox.information(self, "Tooltip", tooltip_text)
 
 
 class StocksWindow(QWidget):
