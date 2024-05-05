@@ -32,8 +32,8 @@ class SubWindow(QWidget):
 class LoginScreen(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.current_user = None  # variable für den aktuellen Benutzer
-        self.mediaPlayer = None  # Instanzvariable für MediaPlayer initialisieren
+        self.current_user = None
+        self.mediaPlayer = None
 
         # Set window title and size
         self.setWindowTitle("Login Screen")
@@ -84,13 +84,11 @@ class LoginScreen(QMainWindow):
         # Create horizontal layout for register and forgot password buttons
         button_layout = QHBoxLayout()
 
-        # Create and add register button
         self.register_button = QPushButton("Register")
         self.register_button.clicked.connect(self.register)
         self.register_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
         button_layout.addWidget(self.register_button)
 
-        # Create and add forgot password button
         self.forgot_password_button = QPushButton("Forgot Password?")
         self.forgot_password_button.clicked.connect(self.forgot_password)
         self.forgot_password_button.setStyleSheet("font-size: 12px; background-color: #ffcc00; color: black")
@@ -98,7 +96,6 @@ class LoginScreen(QMainWindow):
 
         layout.addLayout(button_layout)
 
-        # Play background music for login screen
         self.play_background_music(r"audio\\Login.mp3")
 
     def login(self):
@@ -135,7 +132,7 @@ class LoginScreen(QMainWindow):
         dialog = RegisterDialog(self)
         if dialog.exec_():
             email = dialog.email_input.text()
-            region = dialog.region_dropdown.currentText()  # Get the selected region from the dropdown
+            region = dialog.region_dropdown.currentText()
 
     def forgot_password(self):
         dialog = ForgotPasswordDialog(self)
@@ -231,8 +228,8 @@ class ForgotPasswordDialog(QDialog):
         email = self.email_input.text()
         password = self.parent().retrieve_password_from_database(email)
         if password:
-            self.send_password_email(email, password)  # Sendet das Passwort per E-Mail
-            QMessageBox.information(self, "Password Retrieval", "An email has been sent to your email address with the password.")  # Anzeige der Bestätigungsmeldung
+            self.send_password_email(email, password)
+            QMessageBox.information(self, "Password Retrieval", "An email has been sent to your email address with the password.")
             self.accept()
         else:
             QMessageBox.warning(self, "Password Retrieval Failed", "No user with this email exists.")
@@ -243,8 +240,8 @@ class MainScreen(QMainWindow):
         self.windows = {}
         self.current_user = current_user
 
-        self.setWindowTitle("Main Screen")
-        self.showFullScreen()  # Vollbildmodus aktiviert
+        self.setWindowTitle("Jabba's Realm")
+        self.showFullScreen()
         self.setStyleSheet("background-color: black;")
 
         self.init_ui()
@@ -256,18 +253,21 @@ class MainScreen(QMainWindow):
 
         logo_label = QLabel()
         logo_pixmap = QPixmap("pictures/Background/logo.png")
-        logo_pixmap = logo_pixmap.scaledToWidth(300)
+        logo_pixmap = logo_pixmap.scaledToWidth(400)
         logo_label.setPixmap(logo_pixmap)
 
         credits_label = QLabel()
         credits_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffcc00")
         self.update_credits_label(credits_label)
 
+        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
+        buttons = [self.create_button(name) for name in button_names]
+
         grid_layout = QGridLayout()
-        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "R2D2 Support"]
-        for index, name in enumerate(button_names):
-            button = self.create_button(name)
-            grid_layout.addWidget(button, index, 0, 1, 1, alignment=Qt.AlignCenter)
+        grid_layout.addWidget(buttons[0], 1, 1, alignment=Qt.AlignCenter)
+        grid_layout.addWidget(buttons[1], 1, 2, alignment=Qt.AlignCenter)
+        grid_layout.addWidget(buttons[2], 2, 1, alignment=Qt.AlignCenter)
+        grid_layout.addWidget(buttons[3], 2, 2, alignment=Qt.AlignCenter)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -275,25 +275,24 @@ class MainScreen(QMainWindow):
 
         layout.addWidget(logo_label, alignment=Qt.AlignCenter)
         layout.addWidget(title_label, alignment=Qt.AlignCenter)
-        layout.addStretch(1)
         layout.addLayout(grid_layout)
-        layout.addWidget(credits_label, alignment=Qt.AlignRight)
+        layout.addWidget(credits_label, alignment=Qt.AlignRight | Qt.AlignBottom)
 
         self.play_background_music("audio/cantina.mp3")
-
 
     def create_button(self, name):
         button = QPushButton(name)
         button.setStyleSheet("""
             QPushButton {
-                font-size: 24px;
+                font-size: 32px;
                 font-weight: bold;
                 color: black;
                 background-color: #ffcc00;
-                border-radius: 20px;
-                padding: 15px 30px;
-                min-width: 200px; /* Mindestbreite für den Button */
-                max-width: 400px; /* Maximale Breite für den Button */
+                border-radius: 25px;
+                padding: 25px 50px;
+                min-width: 300px; /* Mindestbreite für den Button */
+                max-width: 500px; /* Maximale Breite für den Button */
+                margin: 15px;
             }
             QPushButton:hover {
                 background-color: #ffaa00; /* Farbe ändern, wenn der Mauszeiger über den Button bewegt wird */
@@ -311,7 +310,7 @@ class MainScreen(QMainWindow):
                     self.windows[name] = StocksWindow()
                 elif name == "Hutts Playground":
                     self.windows[name] = PlaygroundWindow()
-                elif name == "R2D2 Support":
+                elif name == "Jabba's Hangout":
                     self.windows[name] = HangoutWindow()
             self.windows[name].show()
         else:
@@ -332,10 +331,6 @@ class MainScreen(QMainWindow):
             self.mediaPlayer.setMedia(content)
             self.mediaPlayer.setVolume(10)
             self.mediaPlayer.play()
-    
-    #def showEvent(self, event):
-        #super().showEvent(self, event)
-        #self.show_images(self.image_paths)
 
 IMAGE_COSTS = {
         r"pictures/Creatures/Bane-Back-Spider.jpg": 10,
@@ -1211,14 +1206,113 @@ class HangoutWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Set window title and size
-        self.setWindowTitle("R2D2 Support")
-        self.setGeometry(100, 100, 300, 200)
+        self.setWindowTitle("Star Wars Chatbot")
+        self.setGeometry(100, 100, 600, 400)
 
-        label = QLabel("This is the R2D2 Support window.")
-        label.setStyleSheet("font-size: 16px;")
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #000000;
+            }
+            QLabel {
+                color: #FFFF00;
+                font-size: 18px;
+            }
+            QTextBrowser {
+                color: #FFFF00;
+                background-color: #000000;
+                font-size: 14px;
+            }
+            QLineEdit {
+                background-color: #000000;
+                color: #FFFF00;
+                border: 2px solid #FFFF00;
+                font-size: 14px;
+            }
+            QPushButton {
+                background-color: #000000;
+                color: #FFFF00;
+                border: 2px solid #FFFF00;
+                font-size: 14px;
+            }
+        """)
+
         layout = QVBoxLayout(self)
-        layout.addWidget(label, alignment=Qt.AlignCenter)
+
+        self.label = QLabel("Welcome to the Star Wars Chatbot", self)
+        layout.addWidget(self.label)
+
+        self.text_browser = QTextBrowser()
+        layout.addWidget(self.text_browser)
+
+        self.entry = QLineEdit()
+        layout.addWidget(self.entry)
+
+        self.send_button = QPushButton("Send")
+        self.send_button.clicked.connect(self.send)
+        layout.addWidget(self.send_button)
+
+        self.send_text("/help")
+
+    def send(self):
+        user_input = self.entry.text().lower()
+        self.text_browser.append("<b>You -> " + user_input + "</b>")
+        response = self.get_response(user_input)
+        self.text_browser.append("<i>Bot -> " + response + "</i>")
+
+        self.entry.clear()
+
+    def send_text(self, text):
+        self.text_browser.append("<b>You -> " + text + "</b>")
+        response = self.get_response(text)
+        self.text_browser.append("<i>Bot -> " + response + "</i>")
+
+    def get_response(self, user_input):
+        if user_input == "/help":
+            return """
+/hello: Greetings
+/hi: Greetings
+/what is jabbas realm: Information about Jabba's Realm
+/how is the weather today: Weather information
+/who is jabba: Information about Jabba
+/how are you: Check how the bot is doing
+/fine: Confirm that the bot is doing well
+/thanks: Express gratitude
+/what do you sell: Ask about the items available for purchase
+/tell me a joke: Get a funny joke
+/goodbye: End the conversation
+/open the pod bay doors: A classic quote
+/execute order 66: A classic quote
+/may the force be with you: A classic quote
+/i am your father: A classic quote"""
+
+        response = None
+        responses = {
+            "hello": "Hi there, how can I help?",
+            "hi": "Hi there, what can I do for you?",
+            "what is jabbas realm": "Jabba's Realm is a black market application on which you are able to buy rare supplies which you cannot get anywhere else in the galaxy",
+            "how is the weather today": "Today's weather is sunny",
+            "who is jabba": "Jabba is a black market dealer stationed on the edge of the galaxy",
+            "how are you": "Fine! And you?",
+            "fine": "Great! How can I help you?",
+            "thanks": "My pleasure!",
+            "what do you sell": "We have coffee and tea",
+            "tell me a joke": "What did the buffalo say when his son left for college? Bison!",
+            "goodbye": "Have a nice day!",
+            "open the pod bay doors": "I'm sorry, Dave. I'm afraid I can't do that.",
+            "execute order 66": "It will be done, my lord.",
+            "may the force be with you": "And with you.",
+            "i am your father": "No!",
+        }
+
+        if user_input in responses:
+            response = responses[user_input]
+        else:
+            response = "Sorry! I didn't understand that"
+
+        return response
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
