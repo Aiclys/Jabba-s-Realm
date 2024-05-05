@@ -264,7 +264,7 @@ class MainScreen(QMainWindow):
         self.update_credits_label(credits_label)
 
         grid_layout = QGridLayout()
-        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
+        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "R2D2 Support"]
         for index, name in enumerate(button_names):
             button = self.create_button(name)
             grid_layout.addWidget(button, index, 0, 1, 1, alignment=Qt.AlignCenter)
@@ -311,7 +311,7 @@ class MainScreen(QMainWindow):
                     self.windows[name] = StocksWindow()
                 elif name == "Hutts Playground":
                     self.windows[name] = PlaygroundWindow()
-                elif name == "Jabba's Hangout":
+                elif name == "R2D2 Support":
                     self.windows[name] = HangoutWindow()
             self.windows[name].show()
         else:
@@ -1212,10 +1212,10 @@ class HangoutWindow(QWidget):
         super().__init__()
 
         # Set window title and size
-        self.setWindowTitle("Jabba's Hangout")
+        self.setWindowTitle("R2D2 Support")
         self.setGeometry(100, 100, 300, 200)
 
-        label = QLabel("This is the Jabba's Hangout window.")
+        label = QLabel("This is the R2D2 Support window.")
         label.setStyleSheet("font-size: 16px;")
         layout = QVBoxLayout(self)
         layout.addWidget(label, alignment=Qt.AlignCenter)
