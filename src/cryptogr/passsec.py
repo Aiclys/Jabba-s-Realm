@@ -1,15 +1,34 @@
 #!/usr/bin/env python3
 import string
 import secrets
+import random
 import math
 import hashlib
 
-def genpass(length=18):
-    all_characters = string.ascii_letters + string.digits + string.punctuation
-    password = "".join(secrets.choice(all_characters) for i in range(length))
+def genpass(length, options):
+    #all chars that can be in pass
+    characters = [['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+    ["!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","@","[","\\","]","^","_","`","{","|","}","~"]]
+
+    #defining all chars that'll be in this pass
+    symbols = []
+    for i in range(4):
+        if options[i] == 'y':
+            for j in characters[i]:
+                symbols.append(j)
+
+    #generating and returning pass
+    chars = []
+    for i in range(length):
+        chars.append(symbols[random.randint(0, len(symbols)-1)])
+    password = ''.join(chars)
+
     return password
 
-def gen_passphrase(length=5):
+
+def gen_passphrase(length):
     word_file = open("wordlist.txt", "r")
     word_list = []
     passphrase = ""
@@ -30,7 +49,7 @@ def gen_passphrase(length=5):
     passphrase = passphrase[1:]
     return passphrase
 
-def password_entropy(password, numeric_form):
+def password_entropy(password, numeric_form="bits"):
     alphabet_lower = [letter for letter in string.ascii_letters][:26]
     alphabet_upper = [letter for letter in string.ascii_letters][27:]
     digits = [digit for digit in string.digits]
@@ -58,13 +77,13 @@ def password_entropy(password, numeric_form):
         return entropy_in_bytes
 
 def password_safety(password):
-    if password_entropy(password, "bits") < 35 and password_entropy(password, "bits") < 35:
+    if password_entropy(password, "bits") < 35:
         return "very weak"
-    elif password_entropy(password, "bits") >= 35 and password_entropy(password, "bits") < 55:
+    elif password_entropy(password, "bits") >= 35 and password_entropy(password, "bits") < 60:
         return "weak"
-    elif password_entropy(password, "bits") >= 55 and password_entropy(password, "bits") < 75:
+    elif password_entropy(password, "bits") >= 60 and password_entropy(password, "bits") < 80:
         return "medium"
-    elif password_entropy(password, "bits") >= 75 and password_entropy(password, "bits") < 95:
+    elif password_entropy(password, "bits") >= 80 and password_entropy(password, "bits") < 115:
         return "strong"
     elif password_entropy(password, "bits") >= 115:
         return "very strong"
@@ -91,7 +110,7 @@ def gen_passphrase_with_entropy(min_entropy):
 
     return passphrase
 
-def hashpass(password, hash_func):
+def hashpass(password, hash_func="sha512"):
     encoded_password = bytes(password, "utf-8")
 
     if hash_func == "sha512":
