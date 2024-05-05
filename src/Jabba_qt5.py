@@ -8,7 +8,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
-
+import uuid
 
 class SubWindow(QWidget):
     def __init__(self, name, window_class):
@@ -20,8 +20,12 @@ class SubWindow(QWidget):
         self.button.clicked.connect(self.open_window)
         self.button.setStyleSheet("font-size: 14px; font-weight: bold; background-color: #ffcc00; color: black")
 
+        self.windows = {}
+
     def open_window(self):
-        self.window = self.window_class()
+        if self.name not in self.windows:
+            self.windows[self.name] = self.window_class()
+        self.window = self.windows[self.name]
         self.window.show()
 
 
@@ -170,7 +174,7 @@ class RegisterDialog(QDialog):
 
         self.region_dropdown = QComboBox()
         self.region_dropdown.addItems(["Abafar", "Agamar", "Ahch-To", "Ajan Kloss", "Akiva", "Alderaan", "Aldhani", "Aleen", "Alzoc III", "Anaxes", "Ando", "Anoat", "Atollon", "Barton 4", "Balnab", "Batuu", "Bespin", "Bogano", "Bora Vio", "Bracca", "Cantonica", "Castilon", "Cato Neimoidia", "Chandrilla", "Chrustophsis", "Concord Dawn", "Corellia", "Coruscant", "Crait", "Daiyu", "D'Qar", "Dagobah", "Dantooine", "Dathomir", "Devaron", "Eadu", "Endor", "Er´kit", "Eriadu", "Esseles", "Exegol", "Felucia", "Ferrix", "Florrum", "Fondor", "Geonosis", "Hosnian Prime", "Hoth", "Illum", "Iridonia", "Jabiim", "Jakku", "Jedha", "Jelucan", "Jestefad", "Kamino", "Kashyyyk", "Kef Bir", "Kessel", "Kijimi", "Koboh", "Kuat", "Lah'mu", "Lothal", "Lotho Minor", "Malachor", "Malastare", "Mandalore", "Mapuzo", "Maridun", "Miban", "Mon Cala", "Moraband", "Mortis", "Mustafar", "Mygeeto", "Naboo", "Nal Hutta", "Nevarro", "Niamos", "Numidian Prime", "Nur", "Onderon", "Ord Mantell", "Ossus", "Pasaana", "Pillio", "Polis Massa", "Rishi", "Rodia", "Rugosa", "Ruusan", "Ryloth", "Saleucami", "Savareen", "Scarif", "Seatos", "Serenno", "Shili", "Sissubo", "Skako Minor", "Sorgan", "Subterrel", "Sullust", "Takodana", "Tanalor", "Umbara", "Utapau", "Vandor-1", "Vardos", "Wobani", "Wrea", "Yavin", "Yavin 4", "Zeffo", "Zygerria"
-])  # Add your region options here
+])
         self.region_dropdown.setStyleSheet("background-color: #1a1a1a; color: #ffcc00; border: 2px solid #ffcc00; padding: 5px;")
 
         register_button = QPushButton("Register")
@@ -238,21 +242,21 @@ class MainScreen(QMainWindow):
         super().__init__()
         self.windows = {}
         self.current_user = current_user
-        
+
         self.setWindowTitle("Main Screen")
         self.showFullScreen()  # Vollbildmodus aktiviert
         self.setStyleSheet("background-color: black;")
 
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
+    def init_ui(self):
         title_label = QLabel("Jabba's Realm")
         title_label.setStyleSheet("font-family: Star Jedi; font-size: 48px; font-weight: bold; color: #ffcc00; text-shadow: 2px 2px 2px #000000")
-        title_label.setAlignment(Qt.AlignCenter)  # Zentrale Ausrichtung hinzugefügt
+        title_label.setAlignment(Qt.AlignCenter)
 
         logo_label = QLabel()
-        logo_pixmap = QPixmap("pictures/Background/logo.png")  
-        logo_pixmap = logo_pixmap.scaledToWidth(300) 
+        logo_pixmap = QPixmap("pictures/Background/logo.png")
+        logo_pixmap = logo_pixmap.scaledToWidth(300)
         logo_label.setPixmap(logo_pixmap)
 
         credits_label = QLabel()
@@ -262,25 +266,23 @@ class MainScreen(QMainWindow):
         grid_layout = QGridLayout()
         button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
         for index, name in enumerate(button_names):
-            button = self.createButton(name)
-            button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffcc00; border-radius: 20px; padding: 15px 30px;")
-            button.setMaximumWidth(1100) 
-            button.setMinimumHeight(90) 
+            button = self.create_button(name)
             grid_layout.addWidget(button, index, 0, 1, 1, alignment=Qt.AlignCenter)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
 
-        layout.addWidget(logo_label, alignment=Qt.AlignCenter) 
-        layout.addWidget(title_label, alignment=Qt.AlignCenter)  
-        layout.addStretch(1) 
-        layout.addLayout(grid_layout) 
+        layout.addWidget(logo_label, alignment=Qt.AlignCenter)
+        layout.addWidget(title_label, alignment=Qt.AlignCenter)
+        layout.addStretch(1)
+        layout.addLayout(grid_layout)
         layout.addWidget(credits_label, alignment=Qt.AlignRight)
 
-        self.play_background_music(r"audio\cantina.mp3")
+        self.play_background_music("audio/cantina.mp3")
 
-    def createButton(self, name):
+
+    def create_button(self, name):
         button = QPushButton(name)
         button.setStyleSheet("""
             QPushButton {
@@ -300,24 +302,6 @@ class MainScreen(QMainWindow):
         button.clicked.connect(lambda state, button_name=name: self.open_sub_window(button_name))
         return button
 
-
-
-    def buttonClicked(self, button):
-        button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffaa00; border-radius: 10px; padding: 10px;")
-
-        # Rückmeldung nach einer Sekunde
-        QTimer.singleShot(1000, lambda: self.resetButtonStyle(button))
-
-    def resetButtonStyle(self, button):
-        button.setStyleSheet("font-size: 24px; font-weight: bold; color: black; background-color: #ffcc00; border-radius: 10px; padding: 10px;")
-
-    def update_credits_label(self, label):
-        with sqlite3.connect(r"jabbas-data.db") as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT balance FROM users WHERE username=?", (self.current_user,))
-            credits = cursor.fetchone()[0]
-            label.setText(f"Credits: {credits}")
-
     def open_sub_window(self, name):
         if self.current_user:
             if name not in self.windows:
@@ -333,67 +317,26 @@ class MainScreen(QMainWindow):
         else:
             QMessageBox.warning(self, "Login Required", "Please login to access this feature.")
 
+    def update_credits_label(self, label):
+        with sqlite3.connect(r"jabbas-data.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT balance FROM users WHERE username=?", (self.current_user,))
+            credits = cursor.fetchone()[0]
+            label.setText(f"Credits: {credits}")
+
     def play_background_music(self, music_file):
         if QMediaPlayer.supportedMimeTypes():
             self.mediaPlayer = QMediaPlayer()
             url = QUrl.fromLocalFile(music_file)
             content = QMediaContent(url)
             self.mediaPlayer.setMedia(content)
-            self.mediaPlayer.setVolume(30)
+            self.mediaPlayer.setVolume(10)
             self.mediaPlayer.play()
+    
+    #def showEvent(self, event):
+        #super().showEvent(self, event)
+        #self.show_images(self.image_paths)
 
-    def addLogo(self, small=False):
-        logo_label = QLabel()
-        logo_label.setScaledContents(True)
-        
-        if small:
-            logo_pixmap = QPixmap("pictures/credits_small.png")
-        else:
-            logo_pixmap = QPixmap("pictures/credits.png")
-            
-        logo_label.setPixmap(logo_pixmap)
-        
-        h_layout = QHBoxLayout()
-        h_layout.addStretch(1)
-        h_layout.addWidget(logo_label)
-        
-        central_widget = self.centralWidget()
-        central_layout = central_widget.layout()
-        
-        if isinstance(central_layout, QVBoxLayout):
-            central_layout.insertLayout(0, h_layout)
-        elif isinstance(central_layout, QGridLayout):
-            central_layout.insertLayout(0, h_layout, 0, 0, alignment=Qt.AlignRight)
-
-        
-        window_rect = self.frameGeometry()
-        center_point = QDesktopWidget().availableGeometry().center()
-        window_rect.moveCenter(center_point)
-        self.move(window_rect.topLeft())
-"""
-class TooltipWindow(QDialog):
-    def __init__(self, tooltip_text, image_path):
-        super().__init__()
-        self.setWindowTitle("Tooltip")
-        self.setGeometry(300, 300, 200, 150)
-
-        layout = QVBoxLayout()
-
-        self.tooltip_label = QLabel(tooltip_text)
-        self.tooltip_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.tooltip_label)
-
-        # Add buy button
-        buy_button = QPushButton("Buy")
-        buy_button.clicked.connect(lambda: self.handle_purchase(image_path))
-        layout.addWidget(buy_button)
-
-        exit_button = QPushButton("Exit")
-        exit_button.clicked.connect(self.close)
-        layout.addWidget(exit_button)
-
-        self.setLayout(layout)
-"""
 IMAGE_COSTS = {
         r"pictures/Creatures/Bane-Back-Spider.jpg": 10,
         r"pictures/Creatures/Bog-rat.jpg": 10,
@@ -592,19 +535,56 @@ class TooltipWindow(QDialog):
         self.setFixedSize(300, 200)
         self.setPixmap(QPixmap(image_path))
 
+class ShoppingCart(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Shopping Cart")
+        layout = QVBoxLayout()
+        self.table = QTableWidget()
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["Image", "Quantity", "Cost"])
+        layout.addWidget(self.table)
+        self.proceed_button = QPushButton("Proceed to Checkout")
+        self.proceed_button.clicked.connect(self.proceed_to_checkout)
+        layout.addWidget(self.proceed_button)
+        self.clear_button = QPushButton("Clear Cart")
+        self.clear_button.clicked.connect(self.clear_cart)
+        layout.addWidget(self.clear_button)
+        self.setLayout(layout)
+
+        app = QApplication.instance()
+        app.topLevelWidgets().append(self)
+
+    def add_item(self, image_path, quantity, cost):
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        image_label = QLabel()
+        image_label.setPixmap(QPixmap(image_path))
+        self.table.setCellWidget(row, 0, image_label)
+        quantity_item = QTableWidgetItem(str(quantity))
+        self.table.setItem(row, 1, quantity_item)
+        cost_item = QTableWidgetItem(str(cost))
+        self.table.setItem(row, 2, cost_item)
+
+    def proceed_to_checkout(self):
+        pass
+
+    def clear_cart(self):
+        self.table.setRowCount(0)
 
 
 class MarketplaceWindow(QWidget):
-
     def __init__(self):
         super().__init__()
+        self.image_paths = []
+        self.table = QTableWidget()
         self.setWindowTitle("Marketplace")
 
         screen_geometry = QApplication.primaryScreen().geometry()
         self.setGeometry(screen_geometry)
 
         self.category_dropdown = QComboBox()
-        self.category_dropdown.addItems(["creatures", "Astromechdroids", "Battledroids", "Maintenancedroids", "Medicaldroids", "Protocoldroids", "Corvettes", "Frigates", "Shuttles", "Star_Destroyers", "Starfighters", "Artilleries", "Battlevehicles", "Gunships", "Speederbikes", "Transportvehicles", "Blaster_Pistols", "Blaster_Rifles", "Repeating_Rifles", "Sniper_Rifle_Blasters", "Explosives", "Lightsabers"]) 
+        self.category_dropdown.addItems(["creatures", "Astromechdroids", "Battledroids", "Maintenancedroids", "Medicaldroids", "Protocoldroids", "Corvettes", "Frigates", "Shuttles", "Star_Destroyers", "Starfighters", "Artilleries", "Battlevehicles", "Gunships", "Speederbikes", "Transportvehicles", "Blaster_Pistols", "Blaster_Rifles", "Repeating_Rifles", "Sniper_Rifle_Blasters", "Explosives", "Lightsabers"])
         self.category_dropdown.currentIndexChanged.connect(self.show_images)
 
         self.scroll_area = QScrollArea()
@@ -614,444 +594,89 @@ class MarketplaceWindow(QWidget):
         self.scroll_layout = QGridLayout(self.inner_widget)
         self.scroll_layout.setHorizontalSpacing(0)
 
-        self.show_images()
+        self.show_images(self.image_paths)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.category_dropdown)
         layout.addWidget(self.scroll_area)
+        layout.addWidget(self.table)
 
     def showEvent(self, event):
         super().showEvent(event)
-        self.show_images()
+        self.show_images(self.image_paths)
 
-    def show_images(self):
+    def add_to_cart(self):
+        row = self.table.currentRow()
+        if row != -1:
+            image_path = self.image_paths[row]
+            cost = self.table.item(row, 2).text()
+            quantity, ok = QInputDialog.getInteger(self, "Add to Cart", "Enter quantity:", 1, 1, 100, 1)
+            if ok:
+                self.cart.add_item(image_path, quantity, cost)
+    
+    def show_images(self, image_paths):
+        if not isinstance(image_paths, (list, tuple)):
+            image_paths = [image_paths]  # Convert to a list if it's a single value
+        self.image_paths = image_paths
         selected_category = self.category_dropdown.currentText()
+        self.table.setRowCount(len(image_paths))
+        for i, image_path in enumerate(image_paths):
+            self.table.setItem(i, 0, QTableWidgetItem(image_path))
+            self.table.setItem(i, 1, QTableWidgetItem("0"))
+            self.table.setItem(i, 2, QTableWidgetItem("0"))
         image_paths = []
         tooltips = []
 
         if selected_category == "creatures":
-            image_paths = [
-                r"pictures/Creatures/Bane-Back-Spider.jpg",
-                r"pictures/Creatures/Bog-rat.jpg",
-                r"pictures/Creatures/Chirodactyl.jpg",
-                r"pictures/Creatures/Flame-Beetle.jpeg",
-                r"pictures/Creatures/Jotaz.jpg",
-                r"pictures/Creatures/Mykal.jpg",
-                r"pictures/Creatures/Oggdo.jpg",
-                r"pictures/Creatures/Phillak.jpg",
-                r"pictures/Creatures/Scazz.jpg",
-                r"pictures/Creatures/Slyyyg.jpg",
-                r"pictures/Creatures/Splox.jpg",
-                r"pictures/Creatures/Wyyyschokk.jpg"
-            ]
-            tooltips = [
-                "Bane-Back-Spider",
-                "Bog-rat",
-                "Chirodactyl",
-                "Flame-Beetle",
-                "Jotaz",
-                "Mykal",
-                "Oggdo",
-                "Phillak",
-                "Scazz",
-                "Slyyyg",
-                "Splox",
-                "Wyyyschokk"
-            ]
-            pass
+            image_paths, tooltips = self.load_creatures_images()
         elif selected_category == "Astromechdroids":
-            image_paths = [
-                r"pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg",
-                r"pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg"
-            ]
-            tooltips = [
-                "R-1-Astromechdroid",
-                "R-2-Astromechdroid",
-                "R-3-Astromechdroid",
-                "R-4-Astromechdroid",
-                "R-5-Astromechdroid",
-                "R-6-Astromechdroid",
-                "R-7-Astromechdroid",
-                "R-8-Astromechdroid",
-                "R-9-Astromechdroid"
-            ]
-            pass
+            image_paths, tooltips = self.load_astromechdroids_images()
         elif selected_category == "Battledroids":
-            image_paths = [
-                r"pictures/Droids/Battledroids/R-1-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/Droideka-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg",
-                r"pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg"
-            ]
-            tooltips = [
-                "R-1-Battledroid",
-                "B-2-Ha-Super-Battledroid",
-                "B-2-Super-Battledroid",
-                "Bx-Kommando-Battledroid",
-                "Droideka-Battledroid",
-                "Dwarf-Spider-Battledroid",
-                "IG-86-Wächter-Battledroid",
-                "IG-100-Magna-Battledroid"
-            ]
-            pass
+            image_paths, tooltips = self.load_battledroids_images()
         elif selected_category == "Maintenancedroids":
-            image_paths = [
-                r"pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg",
-                r"pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png",
-                r"pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg",
-                r"pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg",
-                r"pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg",
-                r"pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg"
-
-            ]
-            tooltips = [
-                "DUM-series-Maintenancedroid",
-                "EG-6-Maintenancedroid",
-                "GNK-Maintenancedroid",
-                "GO-TO-Maintenancedroid",
-                "MSE-6-Maintenancedroid",
-                "WED-Treadwell-Maintenancedroid"
-            ]
-            pass
+            image_paths, tooltips = self.load_maintenancedroids_images()
         elif selected_category == "Medicaldroids":
-            image_paths = [
-                r"pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg",
-                r"pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg",
-                r"pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg",
-                r"pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg",
-                r"pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg",
-                r"pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg",
-            ]
-            tooltips = [
-                "2-1B-Medicaldroid",
-                "8T88-Medicaldroid",
-                "DD-13-Medicaldroid",
-                "FX-Medicaldroid",
-                "IM-6-Medicaldroid",
-                "SP-4-Medicaldroid"
-            ]
-            pass
+            image_paths, tooltips = self.load_medicaldroids_images()
         elif selected_category == "Protocoldroids":
-            image_paths = [
-                r"pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg",
-                r"pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg",
-                r"pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg"
-            ]
-            tooltips = [
-                "3PO-Protocoldroid",
-                "CZ-Serie-Protocoldroid",
-                "RA-7-Protocoldroid"
-            ]
-            pass
+            image_paths, tooltips = self.load_protocoldroids_images()
         elif selected_category == "Corvettes":
-            image_paths = [
-                r"pictures\Starships\\Corvettes\\CR-70-Corvette.jpg",
-                r"pictures\Starships\\Corvettes\\CR-90-Corvette.jpg",
-                r"pictures\Starships\\Corvettes\\CY-180-Corvette.jpg",
-                r"pictures\Starships\\Corvettes\\Raider-Class-Corvette.jpg",
-                r"pictures\Starships\\Corvettes\Sphyrna-Class-Corvette.jpg"
-            ]
-            tooltips = [
-                "CR-70-Corvette",
-                "CR-90-Corvette",
-                "CY-180-Corvette",
-                "Raider-Class-Corvette",
-                "Sphyrna-Class-Cor"
-            ]
-            pass
+            image_paths, tooltips = self.load_corvettes_images()
         elif selected_category == "Frigates":
-            image_paths = [
-                r"pictures\Starships\\Frigates\Arquitens-Class-Frigate.jpg",
-                r"pictures\Starships\\Frigates\\Corona-Class-Frigate.jpg",
-                r"pictures\Starships\\Frigates\\EF-76-Nebulon-B-Frigate.jpg",
-                r"pictures\Starships\\Frigates\\Kontos-Class-Frigate.jpg",
-                r"pictures\Starships\\Frigates\\Munificent-Class-Frigate.jpg",
-                r"pictures\Starships\\Frigates\\Pelta-Class-Frigate.jpg"
-            ]
-            tooltips = [
-                "Arquitens-Class-Frigate",
-                "Corona-Class-Frigate",
-                "EF-76-Nebulon-B-Frigate",
-                "Kontos-Class-Frigate",
-                "Munificent-Class-Frigate",
-                "Pelta-Class-Frigate"
-            ]
-            pass
+            image_paths, tooltips = self.load_frigates_images()
         elif selected_category == "Shuttles":
-            image_paths = [
-                r"pictures\Starships\Shuttles\Delta-Class-T-3C-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\Eta-Class-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\H-2-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\Lambda-T-4A-Class-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\Nu-Class-Attack-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\Rho-Class-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\T-6-Shuttle.jpg",
-                r"pictures\Starships\Shuttles\\Theta-Class-T-2C-Shuttle.jpg"
-            ]
-            tooltips = [
-                "Delta-Class-T-3C-Shuttle",
-                "Eta-Class-Shuttle",
-                "H-2-Shuttle",
-                "Lambda-T-4A-Class-Shuttle",
-                "Nu-Class-Attack-Shuttle",
-                "Rho-Class-Shuttle",
-                "T-6-Shuttle",
-                "Theta-Class-T-2C-Shuttle"
-            ]
-            pass
+            image_paths, tooltips = self.load_shuttles_images()
         elif selected_category == "Star_Destroyers":
-            image_paths = [
-                "pictures\Starships\Star_Destroyers\Immobilizer-418-Star_Destroyer.jpg",
-                "pictures\Starships\Star_Destroyers\Venator-Class-Star_Destroyer.jpg"
-            ]
-            tooltips = [
-                "Immobilizer-418-Star_Destroyer",
-                "Venator-Class-Star_Destroyer"
-            ]
-            pass
+            image_paths, tooltips = self.load_star_destroyers_images()
         elif selected_category == "Starfighters":
-            image_paths = [
-                r"pictures\Starships\Starfighters\A-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\B-MK2-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\E-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\TIE-Fighter-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\TIE-Interceptor-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\TIE-SA-Bomber-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\U-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\V-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\X-Wing-Starfighter.jpg",
-                r"pictures\Starships\Starfighters\\Y-Wing-Starfighter.jpg"
-            ]
-            tooltips = [
-                "A-Wing-Starfighter",
-                "B-MK2-Wing-Starfighter",
-                "E-Wing-Starfighter",
-                "TIE-Fighter-Starfighter",
-                "TIE-Interceptor-Starfighter",
-                "TIE-SA-Bomber-Starfighter",
-                "U-Wing-Starfighter",
-                "V-Wing-Starfighter",
-                "X-Wing-Starfighter",
-                "Y-Wing-Starfighter"
-            ]
-            pass
+            image_paths, tooltips = self.load_starfighters_images()
         elif selected_category == "Artilleries":
-            image_paths = [
-                r"pictures\Vehicles\Artilleries\AV-7-Artillery.jpg",
-                r"pictures\Vehicles\Artilleries\\J1-Protonenkanone-Artillery.jpg",
-                r"pictures\Vehicles\Artilleries\SPHA-Artillery.jpg"
-            ]
-            tooltips = [
-                "AV-7-Artillery",
-                "J1-Protonenkanone-Artillery",
-                "SPHA-Artillery"
-            ]
-            pass
+            image_paths, tooltips = self.load_artilleries_images()
         elif selected_category == "Battlevehicles":
-            image_paths = [
-                r"pictures\\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpeg",
-                r"pictures\\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg",
-                r"pictures\\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg"
-            ]
-            tooltips = [
-                "AAT-Battlevehicle",
-                "AT-AP-Battlevehicle",
-                "AT-AT-Battlevehicle",
-                "AT-DP-Battlevehicle",
-                "AT-DT-Battlevehicle",
-                "AT-RT-Battlevehicle",
-                "AT-ST-Battlevehicle",
-                "AT-TE-Battlevehicle"
-            ]
-            pass
+            image_paths, tooltips = self.load_battlevehicles_images()
         elif selected_category == "Gunships":
-            image_paths = [
-                r"pictures\\Vehicles\\Gunships\\HMP-Droid-Gunship.jpg",
-                r"pictures\\Vehicles\\Gunships\\LAAT-C-Gunship.jpg",
-                r"pictures\\Vehicles\\Gunships\\LAAT-Gunship.jpg",
-                r"pictures\\Vehicles\\Gunships\\VAAT-Gunship.jpg"
-            ]
-            tooltips = [
-                "HMP-Droid-Gunship",
-                "LAAT-C-Gunship",
-                "LAAT-Gunship",
-                "VAAT-Gunship"
-            ]
-            pass
+            image_paths, tooltips = self.load_gunships_images()
         elif selected_category == "Speederbikes":
-            image_paths = [
-                r"pictures\\Vehicles\Speederbikes\\74-Z-Speederbike.jpg",
-                r"pictures\\Vehicles\Speederbikes\\614-AvA-Speederbike.jpg",
-                r"pictures\\Vehicles\Speederbikes\Barc-Speederbike.jpg",
-                r"pictures\\Vehicles\Speederbikes\\Ck-6-Speederbike.jpg",
-                r"pictures\\Vehicles\Speederbikes\\C-Ph-Patrol-Speederbike.jpg"
-            ]
-            tooltips = [
-                "74-Z-Speederbike",
-                "614-AvA-Speederbike",
-                "Barc-Speederbike",
-                "Ck-6-Speederbike",
-                "C-Ph-Patrol-Speederbike"
-            ]
-            pass
+            image_paths, tooltips = self.load_speederbikes_images()
         elif selected_category == "Transportvehicles":
-            image_paths = [
-                r"pictures\\Vehicles\\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg",
-                r"pictures\\Vehicles\\Transportvehicles\AT-OT-Transportvehicle.jpg",
-                r"pictures\\Vehicles\\Transportvehicles\\MTT-Transportvehicle.jpg",
-                r"pictures\\Vehicles\\Transportvehicles\\UT-AT-Transportvehicle.jpg"
-            ]
-            tooltips = [
-                "A6-Juggernauts-Transportvehicle",
-                "AT-OT-Transportvehicle",
-                "MTT-Transportvehicle",
-                "UT-AT-Transportvehicle"
-            ]
-            pass
+            image_paths, tooltips = self.load_transportvehicles_images()
         elif selected_category == "Blaster_Pistols":
-            image_paths = [
-                r"pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\\LL-30-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\\MW-40-Bryar-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\\NN-14-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\\RK-3-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg",
-                r"pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg"
-            ]
-            tooltips = [
-                "DE-10-Blaster_Pistol",
-                "DH-16-Blaster_Pistol",
-                "DH-17-Blaster_Pistol",
-                "DL-18-Blaster_Pistol",
-                "DL-44-Blaster_Pistol",
-                "LL-30-Blaster_Pistol",
-                "MW-40-Bryar-Blaster_Pistol",
-                "NN-14-Blaster_Pistol",
-                "RK-3-Blaster_Pistol",
-                "S-5-Blaster_Pistol",
-                "S-195-Blaster_Pistol",
-                "SE-14-Blaster_Pistol",
-                "SE-44C-Blaster_Pistol",
-                "WESTAR-34-Blaster_Pistol"
-            ]
-            pass
+            image_paths, tooltips = self.load_blaster_pistols_images()
         elif selected_category == "Blaster_Rifles":
-            image_paths = [
-            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\CR-2-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-5-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-10-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-11-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\E-22-Blaster_Rifle.jpg",
-            r"pictures\Weapons\Blasters\Blaster_Rifles\\EL-16HFE-Blaster_Rifle.jpg"
-            ]
-            tooltips = [
-                "A-280-Blaster_Rifle",
-                "A-280C-Blaster_Rifle",
-                "CR-2-Blaster_Rifle",
-                "E-5-Blaster_Rifle",
-                "E-10-Blaster_Rifle",
-                "E-11-Blaster_Rifle",
-                "E-22-Blaster_Rifle",
-                "EL-16HFE-Blaster_Rifle"
-            ]
-            pass
+            image_paths, tooltips = self.load_blaster_rifles_images()
         elif selected_category == "Repeating_Rifles":
-            image_paths = [
-                r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg",
-                r"pictures\Weapons\Blasters\\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg",
-                r"pictures\Weapons\Blasters\\Repeating_Blasters\\FWMB-10-Repeating_Blaster.jpg",
-                r"pictures\Weapons\Blasters\\Repeating_Blasters\\T-21B-Repeating_Blaster.jpg",
-                r"pictures\Weapons\Blasters\\Repeating_Blasters\\TL-50-Repeating_Blaster.jpg"
-            ]
-            tooltips = [
-                "DC-15A-Repeating_Blaster",
-                "DC-15LE-Repeating_Blaster",
-                "FWMB-10-Repeating_Blaster",
-                "T-21B-Repeating_Blaster",
-                "TL-50-Repeating_Blaster"
-            ]
-            pass
+            image_paths, tooltips = self.load_repeating_rifles_images()
         elif selected_category == "Sniper_Rifle_Blasters":
-            image_paths = [
-                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Cycler-Sniper_Rifle_Blaster.jpg",
-                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg",
-                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg",
-                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\E-5S-Sniper_Rifle_Blaster.jpg",
-                r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\\Valken-38X-Sniper_Rifle_Blaster.jpg"
-            ]
-            tooltips = [
-                "Cycler-Sniper_Rifle_Blaster",
-                "DLT-19X-Sniper_Rifle_Blaster",
-                "DTL-20A-Sniper_Rifle_Blaster",
-                "E-5S-Sniper_Rifle_Blaster",
-                "Valken-38X-Sniper_Rifle_Blaster"
-            ]
-            pass
+            image_paths, tooltips = self.load_sniper_rifle_blasters_images()
         elif selected_category == "Explosives":
-            image_paths = [
-                r"pictures\Weapons\\Explosives\\C-25-Granate.jpg",
-                r"pictures\Weapons\\Explosives\\Flash-Granate.jpg",
-                r"pictures\Weapons\\Explosives\\Impact-Granate.jpg",
-                r"pictures\Weapons\\Explosives\\Ion-Granate.jpg",
-                r"pictures\Weapons\\Explosives\\Proton-Granate.jpg",
-                r"pictures\Weapons\\Explosives\Shock-Granate.jpg",
-                r"pictures\Weapons\\Explosives\\Thermal-Detonator-Granate.jpg"
-            ]
-            tooltips = [
-                "C-25-Granate",
-                "Flash-Granate",
-                "Impact-Granate",
-                "Ion-Granate",
-                "Proton-Granate",
-                "Shock-Granate",
-                "Thermal-Detonator-Granate"
-            ]
-            pass
+            image_paths, tooltips = self.load_explosives_images()
         elif selected_category == "Lightsabers":
-            image_paths = [
-                r"pictures\Weapons\\Lightsabers\Darksaber.jpg",
-                r"pictures\Weapons\\Lightsabers\\Lightsaber.jpg",
-                r"pictures\Weapons\\Lightsabers\\Lightsaber2.jpg",
-                r"pictures\Weapons\\Lightsabers\\Lightsaber3.jpg"
-            ]
-            tooltips = [
-                "Darksaber",
-                "Lightsaber",
-                "Lightsaber2",
-                "Lightsaber3"
-            ]
-            pass
+            image_paths, tooltips = self.load_lightsabers_images()
 
         for i in reversed(range(self.scroll_layout.count())):
             self.scroll_layout.itemAt(i).widget().deleteLater()
 
         num_images = len(image_paths)
-        num_columns = min(num_images, 6)
+        num_columns = 6
         image_width = self.scroll_area.width() // num_columns
 
         row = 0
@@ -1074,56 +699,498 @@ class MarketplaceWindow(QWidget):
             else:
                 print(f"Error loading the image: {path}")
 
-        for path in image_paths:
-            buy_button = QPushButton("Buy")
-            buy_button.clicked.connect(lambda checked, path=path: self.handle_purchase(path))
-            self.scroll_layout.addWidget(buy_button)
+        self.cart = ShoppingCart(self)
+        self.add_to_cart_button = QPushButton("Add to Cart")
+        self.add_to_cart_button.clicked.connect(self.add_to_cart)
+        self.scroll_layout.addWidget(self.add_to_cart_button, row, col)
+        self.center()
 
-    def handle_purchase(self, image_path):
-        cost = self.get_image_cost(image_path)
-        quantity, ok = QInputDialog.getInt(self, "Purchase", f"Enter quantity for {image_path}:", 1, 1, 100, 1)
-        if ok:
-            total_cost = cost * quantity
-            confirmation = QMessageBox.question(self, "Confirm Purchase", f"Do you want to purchase {quantity} of {image_path} for {total_cost} credits?", QMessageBox.Yes | QMessageBox.No)
-            if confirmation == QMessageBox.Yes:
-                success = self.deduct_credits(total_cost)
-                if success:
-                    QMessageBox.information(self, "Success", "Purchase successful!")
-                    self.update_credits_balance_display()
-                else:
-                    QMessageBox.warning(self, "Error", "Insufficient credits!")
-            else:
-                QMessageBox.information(self, "Cancelled", "Purchase cancelled.")
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
-    def get_image_cost(self, image_path):
-        return self.IMAGE_COSTS.get(image_path, 0)
+    def load_creatures_images(self):
+        image_paths = [
+            r"pictures/Creatures/Bane-Back-Spider.jpg",
+            r"pictures/Creatures/Bog-rat.jpg",
+            r"pictures/Creatures/Chirodactyl.jpg",
+            r"pictures/Creatures/Flame-Beetle.jpeg",
+            r"pictures/Creatures/Jotaz.jpg",
+            r"pictures/Creatures/Mykal.jpg",
+            r"pictures/Creatures/Oggdo.jpg",
+            r"pictures/Creatures/Phillak.jpg",
+            r"pictures/Creatures/Scazz.jpg",
+            r"pictures/Creatures/Slyyyg.jpg",
+            r"pictures/Creatures/Splox.jpg",
+            r"pictures/Creatures/Wyyyschokk.jpg"
+        ]
+        tooltips = [
+            "Bane-Back-Spider",
+            "Bog-rat",
+            "Chirodactyl",
+            "Flame-Beetle",
+            "Jotaz",
+            "Mykal",
+            "Oggdo",
+            "Phillak",
+            "Scazz",
+            "Slyyyg",
+            "Splox",
+            "Wyyyschokk"
+        ]
+        return image_paths, tooltips
 
-    def deduct_credits(self, amount):
-        # Hier würde der Code stehen, um die Credits vom Benutzerkonto abzuziehen
-        # In dieser Platzhalter-Implementierung geben wir einfach True zurück
-        return True
+    def load_astromechdroids_images(self):
+        image_paths = [
+            r"pictures/Droids/Astromechdroids/R-1-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-2-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-3-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-4-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-5-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-6-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-7-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-8-Astromechdroid.jpg",
+            r"pictures/Droids/Astromechdroids/R-9-Astromechdroid.jpg"
+        ]
+        tooltips = [
+            "R-1-Astromechdroid",
+            "R-2-Astromechdroid",
+            "R-3-Astromechdroid",
+            "R-4-Astromechdroid",
+            "R-5-Astromechdroid",
+            "R-6-Astromechdroid",
+            "R-7-Astromechdroid",
+            "R-8-Astromechdroid",
+            "R-9-Astromechdroid"
+        ]
+        return image_paths, tooltips
 
-    def update_credits_balance_display(self):
-        # Hier würde der Code stehen, um die Anzeige des aktuellen Guthabens des Benutzers zu aktualisieren
-        # In dieser Platzhalter-Implementierung tun wir nichts
-        pass
+    def load_battledroids_images(self):
+        image_paths = [
+            r"pictures/Droids/Battledroids/R-1-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/B-2-Ha-Super-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/B-2-Super-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/Bx-Kommando-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/Droideka-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/Dwarf-Spider-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/IG-86-Wächter-Battledroid.jpg",
+            r"pictures/Droids/Battledroids/IG-100-Magna-Battledroid.jpg"
+        ]
+        tooltips = [
+            "R-1-Battledroid",
+            "B-2-Ha-Super-Battledroid",
+            "B-2-Super-Battledroid",
+            "Bx-Kommando-Battledroid",
+            "Droideka-Battledroid",
+            "Dwarf-Spider-Battledroid",
+            "IG-86-Wächter-Battledroid",
+            "IG-100-Magna-Battledroid"
+        ]
+        return image_paths, tooltips
+
+    def load_maintenancedroids_images(self):
+        image_paths = [
+            r"pictures\Droids\\Maintenancedroids\DUM-series-Maintenancedroid.jpg",
+            r"pictures\Droids\\Maintenancedroids\\EG-6-Maintenancedroid.png",
+            r"pictures\Droids\\Maintenancedroids\\GNK-Maintenancedroid.jpg",
+            r"pictures\Droids\\Maintenancedroids\\GO-TO-Maintenancedroid.jpg",
+            r"pictures\Droids\\Maintenancedroids\\MSE-6-Maintenancedroid.jpg",
+            r"pictures\Droids\\Maintenancedroids\WED-Treadwell-Maintenancedroid.jpg"
+        ]
+        tooltips =[
+            "DUM-series-Maintenancedroid",
+            "EG-6-Maintenancedroid",
+            "GNK-Maintenancedroid",
+            "GO-TO-Maintenancedroid",
+            "MSE-6-Maintenancedroid",
+            "WED-Treadwell-Maintenancedroid"
+        ]
+        return image_paths, tooltips
+
+    def load_medicaldroids_images(self):
+        image_paths = [
+            r"pictures/Droids/Medicaldroids/2-1B-Medicaldroid.jpg",
+            r"pictures/Droids/Medicaldroids/8T88-Medicaldroid.jpg",
+            r"pictures/Droids/Medicaldroids/DD-13-Medicaldroid.jpg",
+            r"pictures/Droids/Medicaldroids/FX-Medicaldroid.jpg",
+            r"pictures/Droids/Medicaldroids/IM-6-Medicaldroid.jpg",
+            r"pictures/Droids/Medicaldroids/SP-4-Medicaldroid.jpg",
+        ]
+        tooltips = [
+            "2-1B-Medicaldroid",
+            "8T88-Medicaldroid",
+            "DD-13-Medicaldroid",
+            "FX-Medicaldroid",
+            "IM-6-Medicaldroid",
+            "SP-4-Medicaldroid"
+        ]
+        return image_paths, tooltips
+
+    def load_protocoldroids_images(self):
+        image_paths = [
+            r"pictures/Droids/Protocoldroids/3PO-Protocoldroid.jpg",
+            r"pictures/Droids/Protocoldroids/CZ-Serie-Protocoldroid.jpg",
+            r"pictures/Droids/Protocoldroids/RA-7-Protocoldroid.jpg"
+        ]
+        tooltips = [
+            "3PO-Protocoldroid",
+            "CZ-Serie-Protocoldroid",
+            "RA-7-Protocoldroid"
+        ]
+        return image_paths, tooltips
+
+    def load_corvettes_images(self):
+        image_paths = [
+            r"pictures\Starships\\Corvettes\CR-70-Corvette.jpg",
+            r"pictures\Starships\\Corvettes\CR-90-Corvette.jpg",
+            r"pictures\Starships\\Corvettes\CY-180-Corvette.jpg",
+            r"pictures\Starships\\Corvettes\Raider-Class-Corvette.jpg",
+            r"pictures\Starships\\Corvettes\Sphyrna-Class-Corvette.jpg"
+        ]
+        tooltips = [
+            "CR-70-Corvette",
+            "CR-90-Corvette",
+            "CY-180-Corvette",
+            "Raider-Class-Corvette",
+            "Sphyrna-Class-Corvette"
+        ]
+        return image_paths, tooltips
+
+    def load_frigates_images(self):
+        image_paths = [
+            r"pictures\Starships\\Frigates\Arquitens-Class-Frigate.jpg",
+            r"pictures\Starships\\Frigates\Corona-Class-Frigate.jpg",
+            r"pictures\Starships\\Frigates\EF-76-Nebulon-B-Frigate.jpg",
+            r"pictures\Starships\\Frigates\Kontos-Class-Frigate.jpg",
+            r"pictures\Starships\\Frigates\Munificent-Class-Frigate.jpg",
+            r"pictures\Starships\\Frigates\Pelta-Class-Frigate.jpg"
+        ]
+        tooltips = [
+            "Arquitens-Class-Frigate",
+            "Corona-Class-Frigate",
+            "EF-76-Nebulon-B-Frigate",
+            "Kontos-Class-Frigate",
+            "Munificent-Class-Frigate",
+            "Pelta-Class-Frigate"
+        ]
+        return image_paths, tooltips
+
+    def load_shuttles_images(self):
+        image_paths = [
+            r"pictures\Starships\Shuttles\Delta-Class-T-3C-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\Eta-Class-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\H-2-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\Lambda-T-4A-Class-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\Nu-Class-Attack-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\Rho-Class-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\T-6-Shuttle.jpg",
+            r"pictures\Starships\Shuttles\Theta-Class-T-2C-Shuttle.jpg"
+        ]
+        tooltips = [
+            "Delta-Class-T-3C-Shuttle",
+            "Eta-Class-Shuttle",
+            "H-2-Shuttle",
+            "Lambda-T-4A-Class-Shuttle",
+            "Nu-Class-Attack-Shuttle",
+            "Rho-Class-Shuttle",
+            "T-6-Shuttle",
+            "Theta-Class-T-2C-Shuttle"
+        ]
+        return image_paths, tooltips
+
+    def load_star_destroyers_images(self):
+        image_paths = [
+            r"pictures\Starships\Star_Destroyers\Immobilizer-418-Star_Destroyer.jpg",
+            r"pictures\Starships\Star_Destroyers\Venator-Class-Star_Destroyer.jpg"
+        ]
+        tooltips = [
+            "Immobilizer-418-Star_Destroyer",
+            "Venator-Class-Star_Destroyer"
+        ]
+        return image_paths, tooltips
+
+    def load_starfighters_images(self):
+        image_paths = [
+            r"pictures\Starships\Starfighters\A-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\B-MK2-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\E-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\TIE-Fighter-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\TIE-Interceptor-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\TIE-SA-Bomber-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\U-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\V-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\X-Wing-Starfighter.jpg",
+            r"pictures\Starships\Starfighters\Y-Wing-Starfighter.jpg"
+        ]
+        tooltips = [
+            "A-Wing-Starfighter",
+            "B-MK2-Wing-Starfighter",
+            "E-Wing-Starfighter",
+            "TIE-Fighter-Starfighter",
+            "TIE-Interceptor-Starfighter",
+            "TIE-SA-Bomber-Starfighter",
+            "U-Wing-Starfighter",
+            "V-Wing-Starfighter",
+            "X-Wing-Starfighter",
+            "Y-Wing-Starfighter"
+        ]
+        return image_paths, tooltips
+
+    def load_artilleries_images(self):
+        image_paths = [
+            r"pictures\Vehicles\Artilleries\AV-7-Artillery.jpg",
+            r"pictures\Vehicles\Artilleries\J1-Protonenkanone-Artillery.jpg",
+            r"pictures\Vehicles\Artilleries\SPHA-Artillery.jpg"
+        ]
+        tooltips = [
+            "AV-7-Artillery",
+            "J1-Protonenkanone-Artillery",
+            "SPHA-Artillery"
+        ]
+        return image_paths, tooltips
+
+    def load_battlevehicles_images(self):
+        image_paths = [
+            r"pictures\Vehicles\Battlevehicles\AAT-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-AP-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-AT-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-DP-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-DT-Battlevehicle.jpeg",
+            r"pictures\Vehicles\Battlevehicles\AT-RT-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-ST-Battlevehicle.jpg",
+            r"pictures\Vehicles\Battlevehicles\AT-TE-Battlevehicle.jpg"
+        ]
+        tooltips = [
+            "AAT-Battlevehicle",
+            "AT-AP-Battlevehicle",
+            "AT-AT-Battlevehicle",
+            "AT-DP-Battlevehicle",
+            "AT-DT-Battlevehicle",
+            "AT-RT-Battlevehicle",
+            "AT-ST-Battlevehicle",
+            "AT-TE-Battlevehicle"
+        ]
+        return image_paths, tooltips
+
+    def load_gunships_images(self):
+        image_paths = [
+            r"pictures\Vehicles\Gunships\HMP-Droid-Gunship.jpg",
+            r"pictures\Vehicles\Gunships\LAAT-C-Gunship.jpg",
+            r"pictures\Vehicles\Gunships\LAAT-Gunship.jpg",
+            r"pictures\Vehicles\Gunships\VAAT-Gunship.jpg"
+        ]
+        tooltips = [
+            "HMP-Droid-Gunship",
+            "LAAT-C-Gunship",
+            "LAAT-Gunship",
+            "VAAT-Gunship"
+        ]
+        return image_paths, tooltips
+
+    def load_speederbikes_images(self):
+        image_paths = [
+            r"pictures\Vehicles\Speederbikes\74-Z-Speederbike.jpg",
+            r"pictures\Vehicles\Speederbikes\614-AvA-Speederbike.jpg",
+            r"pictures\Vehicles\Speederbikes\Barc-Speederbike.jpg",
+            r"pictures\Vehicles\Speederbikes\Ck-6-Speederbike.jpg",
+            r"pictures\Vehicles\Speederbikes\C-Ph-Patrol-Speederbike.jpg"
+        ]
+        tooltips = [
+            "74-Z-Speederbike",
+            "614-AvA-Speederbike",
+            "Barc-Speederbike",
+            "Ck-6-Speederbike",
+            "C-Ph-Patrol-Speederbike"
+        ]
+        return image_paths, tooltips
+
+    def load_transportvehicles_images(self):
+        image_paths = [
+            r"pictures\Vehicles\Transportvehicles\A6-Juggernauts-Transportvehicle.jpg",
+            r"pictures\Vehicles\Transportvehicles\AT-OT-Transportvehicle.jpg",
+            r"pictures\Vehicles\Transportvehicles\MTT-Transportvehicle.jpg",
+            r"pictures\Vehicles\Transportvehicles\UT-AT-Transportvehicle.jpg"
+        ]
+        tooltips = [
+            "A6-Juggernauts-Transportvehicle",
+            "AT-OT-Transportvehicle",
+            "MTT-Transportvehicle",
+            "UT-AT-Transportvehicle"
+        ]
+        return image_paths, tooltips
+
+    def load_blaster_pistols_images(self):
+        image_paths = [
+            r"pictures\Weapons\Blasters\Blaster_Pistols\DE-10-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\DH-16-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\DH-17-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\DL-18-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\DL-44-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\LL-30-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\MW-40-Bryar-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\NN-14-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\RK-3-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\S-5-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\S-195-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\SE-14-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\SE-44C-Blaster_Pistol.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Pistols\WESTAR-34-Blaster_Pistol.jpg"
+        ]
+        tooltips = [
+            "DE-10-Blaster_Pistol",
+            "DH-16-Blaster_Pistol",
+            "DH-17-Blaster_Pistol",
+            "DL-18-Blaster_Pistol",
+            "DL-44-Blaster_Pistol",
+            "LL-30-Blaster_Pistol",
+            "MW-40-Bryar-Blaster_Pistol",
+            "NN-14-Blaster_Pistol",
+            "RK-3-Blaster_Pistol",
+            "S-5-Blaster_Pistol",
+            "S-195-Blaster_Pistol",
+            "SE-14-Blaster_Pistol",
+            "SE-44C-Blaster_Pistol",
+            "WESTAR-34-Blaster_Pistol"
+        ]
+        return image_paths, tooltips
+
+    def load_blaster_rifles_images(self):
+        image_paths = [
+            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\A-280C-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\CR-2-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\E-5-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\E-10-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\E-11-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\E-22-Blaster_Rifle.jpg",
+            r"pictures\Weapons\Blasters\Blaster_Rifles\EL-16HFE-Blaster_Rifle.jpg"
+        ]
+        tooltips = [
+            "A-280-Blaster_Rifle",
+            "A-280C-Blaster_Rifle",
+            "CR-2-Blaster_Rifle",
+            "E-5-Blaster_Rifle",
+            "E-10-Blaster_Rifle",
+            "E-11-Blaster_Rifle",
+            "E-22-Blaster_Rifle",
+            "EL-16HFE-Blaster_Rifle"
+        ]
+        return image_paths, tooltips
+
+    def load_repeating_rifles_images(self):
+        image_paths = [
+            r"pictures\Weapons\Blasters\Repeating_Blasters\DC-15A-Repeating_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Repeating_Blasters\DC-15LE-Repeating_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Repeating_Blasters\FWMB-10-Repeating_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Repeating_Blasters\T-21B-Repeating_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Repeating_Blasters\TL-50-Repeating_Blaster.jpg"
+        ]
+        tooltips = [
+            "DC-15A-Repeating_Blaster",
+            "DC-15LE-Repeating_Blaster",
+            "FWMB-10-Repeating_Blaster",
+            "T-21B-Repeating_Blaster",
+            "TL-50-Repeating_Blaster"
+        ]
+        return image_paths, tooltips
+
+    def load_sniper_rifle_blasters_images(self):
+        image_paths = [
+            r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\Cycler-Sniper_Rifle_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DLT-19X-Sniper_Rifle_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\DTL-20A-Sniper_Rifle_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\E-5S-Sniper_Rifle_Blaster.jpg",
+            r"pictures\Weapons\Blasters\Sniper_Rifle_Blasters\Valken-38X-Sniper_Rifle_Blaster.jpg"
+        ]
+        tooltips = [
+            "Cycler-Sniper_Rifle_Blaster",
+            "DLT-19X-Sniper_Rifle_Blaster",
+            "DTL-20A-Sniper_Rifle_Blaster",
+            "E-5S-Sniper_Rifle_Blaster",
+            "Valken-38X-Sniper_Rifle_Blaster"
+        ]
+        return image_paths, tooltips
+
+    def load_explosives_images(self):
+        image_paths = [
+            r"pictures\Weapons\Explosives\C-25-Granate.jpg",
+            r"pictures\Weapons\Explosives\Flash-Granate.jpg",
+            r"pictures\Weapons\Explosives\Impact-Granate.jpg",
+            r"pictures\Weapons\Explosives\Ion-Granate.jpg",
+            r"pictures\Weapons\Explosives\Proton-Granate.jpg",
+            r"pictures\Weapons\Explosives\Shock-Granate.jpg",
+            r"pictures\Weapons\Explosives\Thermal-Detonator-Granate.jpg"
+        ]
+        tooltips = [
+            "C-25-Granate",
+            "Flash-Granate",
+            "Impact-Granate",
+            "Ion-Granate",
+            "Proton-Granate",
+            "Shock-Granate",
+            "Thermal-Detonator-Granate"
+        ]
+        return image_paths, tooltips
+
+    def load_lightsabers_images(self):
+        image_paths = [
+            r"pictures\Weapons\Lightsabers\Darksaber.jpg",
+            r"pictures\Weapons\Lightsabers\Lightsaber.jpg",
+            r"pictures\Weapons\Lightsabers\Lightsaber2.jpg",
+            r"pictures\Weapons\Lightsabers\Lightsaber3.jpg"
+        ]
+        tooltips = [
+            "Darksaber",
+            "Lightsaber",
+            "Lightsaber2",
+            "Lightsaber3"
+        ]
+        return image_paths, tooltips
+
+    def add_to_cart(self):
+        # Get the selected row
+        row = self.table.currentRow()
+        if row != -1:
+            # Get the image path and cost from the table
+            image_path = self.image_paths[row]
+            cost = self.table.item(row, 2).text()
+            # Get the quantity from the user
+            quantity, ok = QInputDialog.getInt(self, "Add to Cart", "Enter quantity:", 1, 1, 100, 1)
+            if ok:
+                # Add the item to the shopping cart
+                self.cart.add_item(image_path, quantity, cost)
 
     def show_tooltip(self, tooltip_text, image_path):
         QMessageBox.information(self, "Tooltip", tooltip_text)
-
 
 class StocksWindow(QWidget):
     def __init__(self):
         super().__init__()
 
         # Set window title and size
-        self.setWindowTitle("Jabba's Stocks")
-        self.setGeometry(100, 100, 300, 200)
+        self.setWindowTitle("Jabba's Stock Market")
+        self.setGeometry(100, 100, 600, 400)
+        table = QTableWidget()
 
-        label = QLabel("This is the Jabba's Stocks window.")
-        label.setStyleSheet("font-size: 16px;")
+        # Add a fancy headline
+        headline = QLabel(
+            "<h1 style='text-align:center;color:red;'>Jabba's Stock Market</h1>",
+            self
+        )
+        headline.setAlignment(Qt.AlignCenter)
+
+        # Add a graphic with stocks
+        pic = QLabel()
+        pic.setPixmap(QPixmap(r"pictures\Background\stonks.png"))
+
+        # Add both elements to a layout
         layout = QVBoxLayout(self)
-        layout.addWidget(label, alignment=Qt.AlignCenter)
+        layout.addWidget(headline)
+        layout.addWidget(table)
+        layout.addWidget(pic, alignment=Qt.AlignCenter)
+        layout.addWidget(pic, alignment=Qt.AlignCenter)
 
 class PlaygroundWindow(QWidget):
     def __init__(self):
