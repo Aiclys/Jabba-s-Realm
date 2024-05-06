@@ -1,9 +1,10 @@
+# Global imports
 import sys
 import random
 import numpy as np
 import matplotlib
 from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas, 
+    FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 import sqlite3
@@ -16,6 +17,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 import uuid
+# Regional imports
+from extrafuncs import *
+from database import *
+from cryptogr.passsec import *
+from playground.rep_inv import *
+
+
 
 class SubWindow(QWidget):
     def __init__(self, name, window_class):
@@ -57,8 +65,8 @@ class LoginScreen(QMainWindow):
 
         # Add logo
         logo_label = QLabel()
-        logo_pixmap = QPixmap("pictures\Background\logo.png")  
-        logo_pixmap = logo_pixmap.scaledToWidth(200) 
+        logo_pixmap = QPixmap("pictures\Background\logo.png")
+        logo_pixmap = logo_pixmap.scaledToWidth(200)
         logo_label.setPixmap(logo_pixmap)
         logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_label)
@@ -115,9 +123,9 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect("./jabbas-data.db")
+        conn = sqlite3.connect("database/jabbas-data.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
+        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, hashpass(password)))
         user = cursor.fetchone()
         conn.close()
 
@@ -192,19 +200,27 @@ class RegisterDialog(QDialog):
         layout.addWidget(register_button)
 
         self.setLayout(layout)
-    
+
     def register(self):
         username = self.username_input.text()
         password = self.password_input.text()
         email = self.email_input.text()
         region = self.region_dropdown.currentText()
 
-        # Save user to the database
-        conn = sqlite3.connect("./jabbas-data.db")
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, password, email, region, 99999999999999999))
-        conn.commit()
-        conn.close()
+        if check_email(email) == True:
+            # Save user to the database
+            conn = sqlite3.connect("database/jabbas-data.db")
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, hashpass(password), email, region, 99999999999999999))
+            conn.commit()
+            conn.close()
+        else :
+            # show error pop-up
+            err = QtWidgets.QMessageBox()
+            err.setWindowTitle("Not a valid email")
+            err.setText("Try an email with a valid domain")
+            err.setIcon(QtWidgets.QMessageBox.Critical)
+            err.exec_()
 
         self.accept()
 
@@ -225,7 +241,7 @@ class ForgotPasswordDialog(QDialog):
         retrieve_password_button = QPushButton("Retrieve Password")
         retrieve_password_button.clicked.connect(self.retrieve_password_from_database)
         retrieve_password_button.setStyleSheet("font-size: 14px; background-color: #ffcc00; color: black")
-        
+
         layout.addWidget(self.email_input)
         layout.addWidget(retrieve_password_button)
 
@@ -615,7 +631,7 @@ class MarketplaceWindow(QWidget):
             quantity, ok = QInputDialog.getInteger(self, "Add to Cart", "Enter quantity:", 1, 1, 100, 1)
             if ok:
                 self.cart.add_item(image_path, quantity, cost)
-    
+
     def show_images(self, image_paths):
         if not isinstance(image_paths, (list, tuple)):
             image_paths = [image_paths]  # Convert to a list if it's a single value
@@ -1201,7 +1217,7 @@ class StocksWindow(QWidget):
                 background-color: #007ACC;
             }
         """)
-        self.setGeometry(100, 100, 1400, 800) 
+        self.setGeometry(100, 100, 1400, 800)
 
         layout = QVBoxLayout(self)
 
@@ -1217,7 +1233,7 @@ class StocksWindow(QWidget):
         for _ in range(1, len(self.x_data)):
             self.y_data.append(self.y_data[-1] * (1 + np.random.normal(0, 0.01)))
 
-        self.fig = Figure(figsize=(10, 6), dpi=100)  
+        self.fig = Figure(figsize=(10, 6), dpi=100)
         self.ax = self.fig.add_subplot(111)
         self.ax.set_facecolor('#000000')
         self.ax.set_title('Jabbas Realm Stock Prices')
@@ -1231,11 +1247,11 @@ class StocksWindow(QWidget):
         self.ax.tick_params(axis='y', which='minor', bottom=False)
         self.ax.tick_params(axis='x', which='minor', bottom=False)
 
-        self.line, = self.ax.plot(self.x_data, self.y_data, color='g')  
+        self.line, = self.ax.plot(self.x_data, self.y_data, color='g')
 
         self.canvas = FigureCanvas(self.fig)
         graph_layout.addWidget(self.canvas, alignment=Qt.AlignCenter)
-        
+
         self.cost_label = QLabel()
         layout.addWidget(self.cost_label, alignment=Qt.AlignCenter)
 
@@ -1256,11 +1272,11 @@ class StocksWindow(QWidget):
         x = self.x_data[-1] + 1
         y = self.y_data[-1] * (1 + np.random.normal(0, 0.01))
 
-        y = max(0, y)  
+        y = max(0, y)
         self.x_data.append(x)
         self.y_data.append(y)
 
-        self.line.set_data(self.x_data, self.y_data)  
+        self.line.set_data(self.x_data, self.y_data)
 
         self.ax.relim()
         self.ax.autoscale_view()
