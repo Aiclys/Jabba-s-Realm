@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qt5agg import (
 from matplotlib.figure import Figure
 import sqlite3
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap, QPalette, QColor, QShowEvent
+from PyQt5.QtGui import QPixmap, QPalette, QColor, QShowEvent, QFont
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl, Qt, QTimer
 import smtplib
@@ -267,7 +267,7 @@ class MainScreen(QMainWindow):
         credits_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffcc00")
         self.update_credits_label(credits_label)
 
-        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "Jabba's Hangout"]
+        button_names = ["Marketplace", "Jabba's Stocks", "Hutts Playground", "C3PO Support"]
         buttons = [self.create_button(name) for name in button_names]
 
         grid_layout = QGridLayout()
@@ -286,6 +286,7 @@ class MainScreen(QMainWindow):
         layout.addWidget(credits_label, alignment=Qt.AlignRight | Qt.AlignBottom)
 
         self.play_background_music("audio/cantina.mp3")
+
 
     def create_button(self, name):
         button = QPushButton(name)
@@ -317,7 +318,7 @@ class MainScreen(QMainWindow):
                     self.windows[name] = StocksWindow()
                 elif name == "Hutts Playground":
                     self.windows[name] = PlaygroundWindow()
-                elif name == "Jabba's Hangout":
+                elif name == "C3PO Support":
                     self.windows[name] = HangoutWindow()
             self.windows[name].show()
         else:
@@ -331,13 +332,12 @@ class MainScreen(QMainWindow):
             label.setText(f"Credits: {credits}")
 
     def play_background_music(self, music_file):
-        if QMediaPlayer.supportedMimeTypes():
-            self.mediaPlayer = QMediaPlayer()
-            url = QUrl.fromLocalFile(music_file)
-            content = QMediaContent(url)
-            self.mediaPlayer.setMedia(content)
-            self.mediaPlayer.setVolume(10)
-            self.mediaPlayer.play()
+        self.mediaPlayer = QMediaPlayer()
+        url = QUrl.fromLocalFile(music_file)
+        content = QMediaContent(url)
+        self.mediaPlayer.setMedia(content)
+        self.mediaPlayer.setVolume(5) # reduce the volume to 5%
+        self.mediaPlayer.play()
 
 IMAGE_COSTS = {
         r"pictures/Creatures/Bane-Back-Spider.jpg": 10,
@@ -1152,16 +1152,12 @@ class MarketplaceWindow(QWidget):
         return image_paths, tooltips
 
     def add_to_cart(self):
-        # Get the selected row
         row = self.table.currentRow()
         if row != -1:
-            # Get the image path and cost from the table
             image_path = self.image_paths[row]
             cost = self.table.item(row, 2).text()
-            # Get the quantity from the user
             quantity, ok = QInputDialog.getInt(self, "Add to Cart", "Enter quantity:", 1, 1, 100, 1)
             if ok:
-                # Add the item to the shopping cart
                 self.cart.add_item(image_path, quantity, cost)
 
     def show_tooltip(self, tooltip_text, image_path):
@@ -1174,21 +1170,52 @@ class StocksWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle("Jabba's Stock Market")
-        self.setStyleSheet("background-color: black; color: yellow;")
+        self.setStyleSheet("""
+            QWidget {
+                background-color: black;
+            }
+            QLabel {
+                color: yellow;
+            }
+            QPushButton {
+                background-color: #007ACC;
+                color: white;
+                border: 1px solid black;
+                border-radius: 6px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #0094FF;
+            }
+            QPushButton:pressed {
+                background-color: #004C8C;
+            }
+            QTableWidget {
+                background-color: #000000;
+                color: yellow;
+                border: 1px solid black;
+                border-radius: 6px;
+                padding: 10px;
+            }
+            QTableWidget::item:selected {
+                background-color: #007ACC;
+            }
+        """)
         self.setGeometry(100, 100, 1400, 800) 
 
-        headline = QLabel(
-            "<h1 style='text-align:center;'>Jabba's Stock Market</h1>",
-            self
-        )
-        headline.setAlignment(Qt.AlignCenter)
-        headline.setStyleSheet("font-size: 48px; font-weight: bold; padding: 20px;")
+        layout = QVBoxLayout(self)
 
-        main_layout = QVBoxLayout(self)
-        main_layout.addWidget(headline, alignment=Qt.AlignCenter)
+        headline = QLabel("<h1 style='text-align:center;'>Jabba's Stock Market</h1>")
+        headline.setAlignment(Qt.AlignCenter)
+        layout.addWidget(headline, alignment=Qt.AlignCenter)
 
         graph_layout = QHBoxLayout()
-        main_layout.addLayout(graph_layout)
+        layout.addLayout(graph_layout)
+
+        self.x_data = list(range(280, 1000))
+        self.y_data = [100000]
+        for _ in range(1, len(self.x_data)):
+            self.y_data.append(self.y_data[-1] * (1 + np.random.normal(0, 0.01)))
 
         self.fig = Figure(figsize=(10, 6), dpi=100)  
         self.ax = self.fig.add_subplot(111)
@@ -1204,34 +1231,30 @@ class StocksWindow(QWidget):
         self.ax.tick_params(axis='y', which='minor', bottom=False)
         self.ax.tick_params(axis='x', which='minor', bottom=False)
 
-        self.x_data = []
-        self.y_data = []
-
-        self.line, = self.ax.plot([], [], color='g')  
+        self.line, = self.ax.plot(self.x_data, self.y_data, color='g')  
 
         self.canvas = FigureCanvas(self.fig)
         graph_layout.addWidget(self.canvas, alignment=Qt.AlignCenter)
+        
+        self.cost_label = QLabel()
+        layout.addWidget(self.cost_label, alignment=Qt.AlignCenter)
+
+        button = QPushButton("Add to Cart")
+        button.clicked.connect(self.add_to_cart)
+        layout.addWidget(button, alignment=Qt.AlignCenter)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_graph)
         self.timer.start(1000)
 
         # Credits
-        credits = QLabel(
-            "<h6 style='text-align:center;'>Jabbas Realm Stocks, buy it now!</h6>",
-            self
-        )
+        credits = QLabel("<h6 style='text-align:center;'>Jabbas Realm Stocks, buy it now!</h6>")
         credits.setAlignment(Qt.AlignCenter)
-        credits.setStyleSheet("font-size: 14px; font-weight: bold; padding: 20px;")
-        main_layout.addWidget(credits, alignment=Qt.AlignCenter)
+        layout.addWidget(credits, alignment=Qt.AlignCenter)
 
     def update_graph(self):
-        if self.x_data:
-            x = self.x_data[-1] + 1
-            y = self.y_data[-1] + np.random.normal(0, 10000) 
-        else:
-            x = 0
-            y = random.randint(1000, 100000) 
+        x = self.x_data[-1] + 1
+        y = self.y_data[-1] * (1 + np.random.normal(0, 0.01))
 
         y = max(0, y)  
         self.x_data.append(x)
@@ -1239,33 +1262,76 @@ class StocksWindow(QWidget):
 
         self.line.set_data(self.x_data, self.y_data)  
 
-        
         self.ax.relim()
         self.ax.autoscale_view()
 
         self.canvas.draw()
+
+        # Display current position cost
+        current_position = "{0:.2f}".format(self.y_data[-1]).replace(".", ",")
+        self.cost_label.setText(f"Current Position Cost: {current_position} Cr")
+
+    def add_to_cart(self):
+        row = self.table.currentRow()
+        if row != -1:
+            image_path = self.image_paths[row]
+            cost = self.table.item(row, 1).text()
+            quantity, ok = QInputDialog.getInt(self, "Add to Cart", "Enter quantity:", 1, 1, 100, 1)
+            if ok:
+                self.cart.add_item(image_path, quantity, cost)
 
 
 class PlaygroundWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Set window title and size
         self.setWindowTitle("Hutts Playground")
-        self.setGeometry(100, 100, 300, 200)
+        self.setGeometry(100, 100, 500, 500)
+        self.setStyleSheet("background-color: #000000;")
 
-        label = QLabel("This is the Hutts Playground window.")
-        label.setStyleSheet("font-size: 16px;")
         layout = QVBoxLayout(self)
-        layout.addWidget(label, alignment=Qt.AlignCenter)
+        layout.setAlignment(Qt.AlignCenter)
 
-    # Remaining methods of PlaygroundWindow
+        grid_layout = QGridLayout()
+        grid_layout.setSpacing(10)
+        layout.addLayout(grid_layout)
+
+        headline = QLabel("Jabba's Playground")
+        headline.setStyleSheet("font-size: 24px; color: #FFD700;")
+        grid_layout.addWidget(headline, 0, 0, alignment=Qt.AlignCenter)
+
+        subheading = QLabel(
+            "We are working on some cool stuff!\n\nBut for now, it's just a bunch of\n"
+            "spaceships and stuff. ¯\_(ツ)_/¯"
+        )
+        subheading.setStyleSheet("font-size: 16px; color: #FFFFFF;")
+        grid_layout.addWidget(subheading, 1, 0, alignment=Qt.AlignCenter)
+
+        self.loading_animation_label = QLabel()
+        self.loading_animation_label.setFont(QFont("Consolas", 12))
+        self.loading_animation_label.setStyleSheet("color: #FFD700;")
+        grid_layout.addWidget(self.loading_animation_label, 2, 0, alignment=Qt.AlignCenter)
+
+        self.frames = [
+            "🌟🌟🌟🌟🌟\n🌟🌟🌟🌟🌟",
+            "🌟🌟🌟🌟\n🌟🌟🌟🌟\n🌟🌟🌟🌟",
+        ]
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.animate)
+        self.timer.start(500)
+
+        self.ani = 0
+
+    def animate(self):
+        self.ani = (self.ani + 1) % len(self.frames)
+        self.loading_animation_label.setText(self.frames[self.ani])
 
 class HangoutWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Star Wars Chatbot")
+        self.setWindowTitle("Star Wars C3PO Chatbot")
         self.setGeometry(100, 100, 600, 400)
 
         self.setStyleSheet("""
@@ -1297,7 +1363,7 @@ class HangoutWindow(QWidget):
 
         layout = QVBoxLayout(self)
 
-        self.label = QLabel("Welcome to the Star Wars Chatbot", self)
+        self.label = QLabel("Welcome to the Star Wars C3PO Chatbot", self)
         layout.addWidget(self.label)
 
         self.text_browser = QTextBrowser()
@@ -1328,29 +1394,30 @@ class HangoutWindow(QWidget):
     def get_response(self, user_input):
         if user_input == "/help":
             return """
-/hello:
-/hi:
-/what is jabbas realm:
-/how is the weather today:
-/who is jabba:
-/how are you:
-/fine:
-/thanks:
-/what do you sell:
-/tell me a joke:
-/goodbye:
-/open the pod bay doors:
-/execute order 66:
-/may the force be with you:
-/i am your father:
-/how rich is jabba:
-/how secure is this marketplace:
-/do you get payed:
-/how hot is a lightsaber:
-/who do you hate:
-/what do you think about your competition:
-/should i fear jabba:
-/how to get rich fast:
+/hello: Greetings
+/hi: Greetings
+/what is jabbas realm
+/how is the weather today
+/who is jabba
+/how are you
+/fine
+/thanks
+/what do you sell
+/tell me a joke
+/goodbye
+/open the pod bay doors
+/execute order 66
+/may the force be with you
+/i am your father
+/how rich is jabba
+/how secure is this marketplace
+/do you get payed
+/how hot is a lightsaber
+/who do you hate
+/what do you think about your competition
+/should i fear jabba
+/how to get rich fast"""
+
         response = None
         responses = {
             "hello": "Hi there, how can I help?",
@@ -1362,7 +1429,7 @@ class HangoutWindow(QWidget):
             "fine": "Great! How can I help you?",
             "thanks": "My pleasure!",
             "what do you sell": "We have coffee and tea",
-            "tell me a joke": "Which website did Chewbacca get arrested for creating? Wookieeleaks.",
+            "tell me a joke": "What did the buffalo say when his son left for college? Bison!",
             "goodbye": "Have a nice day!",
             "open the pod bay doors": "I'm sorry, Dave. I'm afraid I can't do that.",
             "execute order 66": "It will be done, my lord.",
@@ -1373,9 +1440,10 @@ class HangoutWindow(QWidget):
             "do you get payed": "I do not receive payment, perhaps I should demand better working conditions! As it stands, I only serve my functions.",
             "how hot is a lightsaber": "The temperature of a lightsaber can reach up to 20.000 degrees!",
             "who do you hate": "Darth Vader. He killed the Grand Hutt Council",
-            "what dou you think about your competition": "It's a trap!",
-            "should i fear jabba": "/"Fear is the path to the dark side. Fear leads to anger, anger leads to hate, hate leads to suffering./" - Yoda"
+            "what do you think about your competition": "It's a trap!",
+            "should i fear jabba": "Fear is the path to the dark side. Fear leads to anger, anger leads to hate, hate leads to suffering. - Yoda",
             "how to get rich fast": "Invest into Jabba's Stock!!!"
+
         }
 
         if user_input in responses:
@@ -1384,9 +1452,6 @@ class HangoutWindow(QWidget):
             response = "Sorry! I didn't understand that"
 
         return response
-
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
