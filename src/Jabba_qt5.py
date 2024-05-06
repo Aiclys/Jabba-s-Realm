@@ -1328,22 +1328,29 @@ class HangoutWindow(QWidget):
     def get_response(self, user_input):
         if user_input == "/help":
             return """
-/hello: Greetings
-/hi: Greetings
-/what is jabbas realm: Information about Jabba's Realm
-/how is the weather today: Weather information
-/who is jabba: Information about Jabba
-/how are you: Check how the bot is doing
-/fine: Confirm that the bot is doing well
-/thanks: Express gratitude
-/what do you sell: Ask about the items available for purchase
-/tell me a joke: Get a funny joke
-/goodbye: End the conversation
-/open the pod bay doors: A classic quote
-/execute order 66: A classic quote
-/may the force be with you: A classic quote
-/i am your father: A classic quote"""
-
+/hello:
+/hi:
+/what is jabbas realm:
+/how is the weather today:
+/who is jabba:
+/how are you:
+/fine:
+/thanks:
+/what do you sell:
+/tell me a joke:
+/goodbye:
+/open the pod bay doors:
+/execute order 66:
+/may the force be with you:
+/i am your father:
+/how rich is jabba:
+/how secure is this marketplace:
+/do you get payed:
+/how hot is a lightsaber:
+/who do you hate:
+/what do you think about your competition:
+/should i fear jabba:
+/how to get rich fast:
         response = None
         responses = {
             "hello": "Hi there, how can I help?",
@@ -1355,12 +1362,20 @@ class HangoutWindow(QWidget):
             "fine": "Great! How can I help you?",
             "thanks": "My pleasure!",
             "what do you sell": "We have coffee and tea",
-            "tell me a joke": "What did the buffalo say when his son left for college? Bison!",
+            "tell me a joke": "Which website did Chewbacca get arrested for creating? Wookieeleaks.",
             "goodbye": "Have a nice day!",
             "open the pod bay doors": "I'm sorry, Dave. I'm afraid I can't do that.",
             "execute order 66": "It will be done, my lord.",
             "may the force be with you": "And with you.",
             "i am your father": "Noooooooooo!",
+            "how rich is jabba": "Jabba's net worth currently is 1297382950283 Credits!",
+            "how secure is this marketplace": "Our website is safe from SQL injection. Furthermore we hash your password . If you are uncertain about your password security you can also let us generate one for you!",
+            "do you get payed": "I do not receive payment, perhaps I should demand better working conditions! As it stands, I only serve my functions.",
+            "how hot is a lightsaber": "The temperature of a lightsaber can reach up to 20.000 degrees!",
+            "who do you hate": "Darth Vader. He killed the Grand Hutt Council",
+            "what dou you think about your competition": "It's a trap!",
+            "should i fear jabba": "/"Fear is the path to the dark side. Fear leads to anger, anger leads to hate, hate leads to suffering./" - Yoda"
+            "how to get rich fast": "Invest into Jabba's Stock!!!"
         }
 
         if user_input in responses:
