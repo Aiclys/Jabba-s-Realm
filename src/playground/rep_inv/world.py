@@ -47,7 +47,7 @@ class World:
 	def add_additionals(self):
 		# add nav bar
 		nav = pygame.Rect(0, HEIGHT, WIDTH, NAV_THICKNESS)
-		pygame.draw.rect(self.screen, pygame.Color("gray"), nav)
+		pygame.draw.rect(self.screen, pygame.Color("black"), nav)
 
 		# render player's life, score and game level
 		self.display.show_life(self.player.sprite.life)

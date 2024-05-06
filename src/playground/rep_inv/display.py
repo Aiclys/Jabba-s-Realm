@@ -11,7 +11,7 @@ class Display:
 		self.score_font = pygame.font.SysFont("monospace", FONT_SIZE)
 		self.level_font = pygame.font.SysFont("impact", FONT_SIZE)
 		self.event_font = pygame.font.SysFont("impact", EVENT_FONT_SIZE)
-		self.text_color = pygame.Color("blue")
+		self.text_color = pygame.Color("#ffcc00")
 		self.event_color = pygame.Color("red")
 
 
