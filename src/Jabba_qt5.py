@@ -1,4 +1,11 @@
 import sys
+import random
+import numpy as np
+import matplotlib
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas, 
+    NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.figure import Figure
 import sqlite3
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QPalette, QColor, QShowEvent
@@ -1160,32 +1167,84 @@ class MarketplaceWindow(QWidget):
     def show_tooltip(self, tooltip_text, image_path):
         QMessageBox.information(self, "Tooltip", tooltip_text)
 
+
+
 class StocksWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Set window title and size
         self.setWindowTitle("Jabba's Stock Market")
-        self.setGeometry(100, 100, 600, 400)
-        table = QTableWidget()
+        self.setStyleSheet("background-color: black; color: yellow;")
+        self.setGeometry(100, 100, 1400, 800) 
 
-        # Add a fancy headline
         headline = QLabel(
-            "<h1 style='text-align:center;color:red;'>Jabba's Stock Market</h1>",
+            "<h1 style='text-align:center;'>Jabba's Stock Market</h1>",
             self
         )
         headline.setAlignment(Qt.AlignCenter)
+        headline.setStyleSheet("font-size: 48px; font-weight: bold; padding: 20px;")
 
-        # Add a graphic with stocks
-        pic = QLabel()
-        pic.setPixmap(QPixmap(r"pictures\Background\stonks.png"))
+        main_layout = QVBoxLayout(self)
+        main_layout.addWidget(headline, alignment=Qt.AlignCenter)
 
-        # Add both elements to a layout
-        layout = QVBoxLayout(self)
-        layout.addWidget(headline)
-        layout.addWidget(table)
-        layout.addWidget(pic, alignment=Qt.AlignCenter)
-        layout.addWidget(pic, alignment=Qt.AlignCenter)
+        graph_layout = QHBoxLayout()
+        main_layout.addLayout(graph_layout)
+
+        self.fig = Figure(figsize=(10, 6), dpi=100)  
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_facecolor('#000000')
+        self.ax.set_title('Jabbas Realm Stock Prices')
+        self.ax.set_xlabel('Time (days)')
+        self.ax.set_ylabel('Stock Price (Cr)')
+        self.ax.grid(True)
+        self.ax.tick_params(axis='y', labelcolor='green')
+        self.ax.yaxis.label.set_color('green')
+        self.ax.tick_params(axis='x', labelcolor='green')
+        self.ax.xaxis.label.set_color('green')
+        self.ax.tick_params(axis='y', which='minor', bottom=False)
+        self.ax.tick_params(axis='x', which='minor', bottom=False)
+
+        self.x_data = []
+        self.y_data = []
+
+        self.line, = self.ax.plot([], [], color='g')  
+
+        self.canvas = FigureCanvas(self.fig)
+        graph_layout.addWidget(self.canvas, alignment=Qt.AlignCenter)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_graph)
+        self.timer.start(1000)
+
+        # Credits
+        credits = QLabel(
+            "<h6 style='text-align:center;'>Jabbas Realm Stocks, buy it now!</h6>",
+            self
+        )
+        credits.setAlignment(Qt.AlignCenter)
+        credits.setStyleSheet("font-size: 14px; font-weight: bold; padding: 20px;")
+        main_layout.addWidget(credits, alignment=Qt.AlignCenter)
+
+    def update_graph(self):
+        if self.x_data:
+            x = self.x_data[-1] + 1
+            y = self.y_data[-1] + np.random.normal(0, 10000) 
+        else:
+            x = 0
+            y = random.randint(1000, 100000) 
+
+        y = max(0, y)  
+        self.x_data.append(x)
+        self.y_data.append(y)
+
+        self.line.set_data(self.x_data, self.y_data)  
+
+        
+        self.ax.relim()
+        self.ax.autoscale_view()
+
+        self.canvas.draw()
+
 
 class PlaygroundWindow(QWidget):
     def __init__(self):
@@ -1301,7 +1360,7 @@ class HangoutWindow(QWidget):
             "open the pod bay doors": "I'm sorry, Dave. I'm afraid I can't do that.",
             "execute order 66": "It will be done, my lord.",
             "may the force be with you": "And with you.",
-            "i am your father": "No!",
+            "i am your father": "Noooooooooo!",
         }
 
         if user_input in responses:
