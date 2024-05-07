@@ -341,7 +341,7 @@ class MainScreen(QMainWindow):
             QMessageBox.warning(self, "Login Required", "Please login to access this feature.")
 
     def update_credits_label(self, label):
-        with sqlite3.connect(r"jabbas-data.db") as conn:
+        with sqlite3.connect(r"database/jabbas-data.db") as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT balance FROM users WHERE username=?", (self.current_user,))
             credits = cursor.fetchone()[0]
