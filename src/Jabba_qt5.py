@@ -1316,7 +1316,7 @@ class PlaygroundWindow(QWidget):
 
         subheading = QLabel(
             "We are working on some cool stuff!\n\nBut for now, it's just a bunch of\n"
-            "spaceships and stuff. ¯\_(ツ)_/¯"
+            "animated stars. ¯\_(ツ)_/¯"
         )
         subheading.setStyleSheet("font-size: 16px; color: #FFFFFF;")
         grid_layout.addWidget(subheading, 1, 0, alignment=Qt.AlignCenter)
@@ -1408,8 +1408,8 @@ class HangoutWindow(QWidget):
     def get_response(self, user_input):
         if user_input == "/help":
             return """
-/hello: Greetings
-/hi: Greetings
+/hello
+/hi
 /what is jabbas realm
 /how is the weather today
 /who is jabba
@@ -1443,7 +1443,7 @@ class HangoutWindow(QWidget):
             "fine": "Great! How can I help you?",
             "thanks": "My pleasure!",
             "what do you sell": "We have coffee and tea",
-            "tell me a joke": "What did the buffalo say when his son left for college? Bison!",
+            "tell me a joke": "Which website did Chewbacca get arrested for creating? Wookieeleaks.",
             "goodbye": "Have a nice day!",
             "open the pod bay doors": "I'm sorry, Dave. I'm afraid I can't do that.",
             "execute order 66": "It will be done, my lord.",
