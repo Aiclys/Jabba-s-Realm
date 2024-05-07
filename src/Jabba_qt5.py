@@ -18,10 +18,8 @@ from email.mime.text import MIMEText
 import os
 import uuid
 # Regional imports
-from extrafuncs import *
-from database import *
 from cryptogr.passsec import *
-from playground.rep_inv import *
+#from playground.rep_inv import *
 
 
 
@@ -123,7 +121,7 @@ class LoginScreen(QMainWindow):
             return
 
         # Check credentials against the database
-        conn = sqlite3.connect("database/jabbas-data.db")
+        conn = sqlite3.connect("jabbas-data.db")
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username, hashpass(password)))
         user = cursor.fetchone()
@@ -207,20 +205,20 @@ class RegisterDialog(QDialog):
         email = self.email_input.text()
         region = self.region_dropdown.currentText()
 
-        if check_email(email) == True:
-            # Save user to the database
-            conn = sqlite3.connect("database/jabbas-data.db")
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, hashpass(password), email, region, 99999999999999999))
-            conn.commit()
-            conn.close()
-        else :
-            # show error pop-up
-            err = QtWidgets.QMessageBox()
-            err.setWindowTitle("Not a valid email")
-            err.setText("Try an email with a valid domain")
-            err.setIcon(QtWidgets.QMessageBox.Critical)
-            err.exec_()
+        
+        # Save user to the database
+        conn = sqlite3.connect("jabbas-data.db")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users(username, password, email, region, balance) VALUES (?, ?, ?, ?, ?)", (username, hashpass(password), email, region, 99999999999999999))
+        conn.commit()
+        conn.close()
+        #else :
+        #    # show error pop-up
+        #    err = QWidgets.QMessageBox()
+        #    err.setWindowTitle("Not a valid email")
+        #    err.setText("Try an email with a valid domain")
+        #    err.setIcon(QWidgets.QMessageBox.Critical)
+        #    err.exec_()
 
         self.accept()
 
@@ -341,7 +339,7 @@ class MainScreen(QMainWindow):
             QMessageBox.warning(self, "Login Required", "Please login to access this feature.")
 
     def update_credits_label(self, label):
-        with sqlite3.connect(r"database/jabbas-data.db") as conn:
+        with sqlite3.connect("jabbas-data.db") as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT balance FROM users WHERE username=?", (self.current_user,))
             credits = cursor.fetchone()[0]
@@ -1191,7 +1189,7 @@ class StocksWindow(QWidget):
                 background-color: black;
             }
             QLabel {
-                color: yellow;
+                color: #FFCC00;
             }
             QPushButton {
                 background-color: #007ACC;
@@ -1208,7 +1206,7 @@ class StocksWindow(QWidget):
             }
             QTableWidget {
                 background-color: #000000;
-                color: yellow;
+                color: #FFCC00;
                 border: 1px solid black;
                 border-radius: 6px;
                 padding: 10px;
@@ -1313,7 +1311,7 @@ class PlaygroundWindow(QWidget):
         layout.addLayout(grid_layout)
 
         headline = QLabel("Jabba's Playground")
-        headline.setStyleSheet("font-size: 24px; color: #FFD700;")
+        headline.setStyleSheet("font-size: 24px; color: #FFCC00;")
         grid_layout.addWidget(headline, 0, 0, alignment=Qt.AlignCenter)
 
         subheading = QLabel(
@@ -1325,7 +1323,7 @@ class PlaygroundWindow(QWidget):
 
         self.loading_animation_label = QLabel()
         self.loading_animation_label.setFont(QFont("Consolas", 12))
-        self.loading_animation_label.setStyleSheet("color: #FFD700;")
+        self.loading_animation_label.setStyleSheet("color: #FFCC00;")
         grid_layout.addWidget(self.loading_animation_label, 2, 0, alignment=Qt.AlignCenter)
 
         self.frames = [
@@ -1355,24 +1353,24 @@ class HangoutWindow(QWidget):
                 background-color: #000000;
             }
             QLabel {
-                color: #FFFF00;
+                color: #FFCC00;
                 font-size: 18px;
             }
             QTextBrowser {
-                color: #FFFF00;
+                color: #FFCC00;
                 background-color: #000000;
                 font-size: 14px;
             }
             QLineEdit {
                 background-color: #000000;
-                color: #FFFF00;
-                border: 2px solid #FFFF00;
+                color: #FFCC00;
+                border: 2px solid #FFCC00;
                 font-size: 14px;
             }
             QPushButton {
                 background-color: #000000;
                 color: #FFFF00;
-                border: 2px solid #FFFF00;
+                border: 2px solid #FFCC00;
                 font-size: 14px;
             }
         """)
