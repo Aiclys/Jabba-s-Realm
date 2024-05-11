@@ -1,2 +1,2 @@
-# Jabba-s-Realm
-Jabba's Realm fictional Star-Wars shop
+-passec.py needs to be in the cryptogr folder.
+-jabba-data.db needs to be in the same folder as JabaQt5.py
